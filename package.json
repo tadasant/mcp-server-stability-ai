@@ -1,0 +1,41 @@
+{
+  "type": "module",
+  "bin": {
+    "mcp-server-stability-ai": "./build/index.js"
+  },
+  "scripts": {
+    "build": "tsc && node -e \"require('fs').chmodSync('build/index.js', '755')\"",
+    "start:test": "npm run build && node build/test.js"
+  },
+  "files": [
+    "build"
+  ],
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.4",
+    "axios": "^1.7.9",
+    "dotenv": "^16.4.7",
+    "open": "^10.1.0",
+    "zod": "^3.24.1"
+  },
+  "name": "mcp-server-stability-ai",
+  "version": "0.0.1",
+  "description": "MCP [Model Context Protocol](https://modelcontextprotocol.io/) Server integrating MCP Clients with [Stability AI](https://stability.ai/) image manipulation functionalities: generate, edit, upscale, and more.",
+  "main": "index.js",
+  "keywords": [
+    "mcp",
+    "model context protocol",
+    "mcp server",
+    "stability",
+    "stability ai",
+    "image generation",
+    "image manipulation",
+    "upscale"
+  ],
+  "author": "Tadas Antanavicius (https://github.com/tadasant)",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/dotenv": "^6.1.1",
+    "@types/node": "^22.10.2",
+    "typescript": "^5.7.2"
+  }
+}
