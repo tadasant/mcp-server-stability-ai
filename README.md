@@ -6,7 +6,7 @@
 
 <br/>
 
-This is an MCP ([Model Context Protocol](https://modelcontextprotocol.io/)) Server integrating MCP Clients with [Stability AI](https://stability.ai/) image manipulation functionalities: generate, edit, upscale, and more.
+This is an MCP ([Model Context Protocol](https://modelcontextprotocol.io/)) Server integrating MCP Clients with [Stability AI](https://stability.ai/)'s latest & greatest Stable Diffusion image manipulation functionalities: generate, edit, upscale, and more.
 
 Stability AI is a leading AI model provider and this server connects directly to their [hosted REST API](https://platform.stability.ai/docs/api-reference). You will need to sign up for an [API Key from stability.ai](https://platform.stability.ai/account/keys) to get started.
 
