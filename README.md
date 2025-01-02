@@ -1,8 +1,14 @@
-# mcp-server-stability-ai
+<div align="center">
+ <h1><img src="images/mcp-server-stability-ai-logo.png" width="160px"><br/>Stability AI MCP Server</h1>
+ <img src="https://img.shields.io/github/license/tadasant/mcp-server-stability-ai?style=flat-square&color=purple"/>
+ <img src="https://img.shields.io/npm/v/mcp-server-stability-ai?style=flat-square&color=blue"/>
+</div>
+
+<br/>
 
 This is an MCP ([Model Context Protocol](https://modelcontextprotocol.io/)) Server integrating MCP Clients with [Stability AI](https://stability.ai/) image manipulation functionalities: generate, edit, upscale, and more.
 
-Stability AI is a leading AI model provider and this server connects directly to their [hosted REST API](https://platform.stability.ai/docs/api-reference). You will need to sign up for an [API Key](https://platform.stability.ai/account/keys) to get started.
+Stability AI is a leading AI model provider and this server connects directly to their [hosted REST API](https://platform.stability.ai/docs/api-reference). You will need to sign up for an [API Key from stability.ai](https://platform.stability.ai/account/keys) to get started.
 
 They provide 25 credits for free. Afterward, [pay-as-you-go pricing](https://platform.stability.ai/pricing) is very reasonable: $0.01/credit, where 3 credits gets you an image generation on their Core model. So 100 high quality images = just $3.
 
@@ -37,15 +43,15 @@ Here's a teaser of how it works:
 
 This server is built and tested on macOS with Claude Desktop. It should work with other MCP clients as well.
 
-| Tool Name            | Description                                                                                        | Estimated Cost |
-| -------------------- | -------------------------------------------------------------------------------------------------- | -------------- |
-| `generate-image`     | Generate a high quality image of anything based on a provided prompt & other optional parameters.  | $0.03          |
-| `remove-background`  | Remove the background from an image.                                                               | $0.02          |
-| `outpaint`           | Extend an image in any direction while maintaining visual consistency.                             | $0.04          |
-| `search-and-replace` | Replace objects or elements in an image by describing what to replace and what to replace it with. | $0.04          |
-| `upscale-fast`       | Enhance image resolution by 4x.                                                                    | $0.01          |
-| `upscale-creative`   | Enhance image resolution up to 4K.                                                                 | $0.25          |
-| `control-sketch`     | Translate hand-drawn sketch to production-grade image.                                             | $0.03          |
+| Tool Name            | Description                                                                                        | Estimated Stability API Cost |
+| -------------------- | -------------------------------------------------------------------------------------------------- | ---------------------------- |
+| `generate-image`     | Generate a high quality image of anything based on a provided prompt & other optional parameters.  | $0.03                        |
+| `remove-background`  | Remove the background from an image.                                                               | $0.02                        |
+| `outpaint`           | Extend an image in any direction while maintaining visual consistency.                             | $0.04                        |
+| `search-and-replace` | Replace objects or elements in an image by describing what to replace and what to replace it with. | $0.04                        |
+| `upscale-fast`       | Enhance image resolution by 4x.                                                                    | $0.01                        |
+| `upscale-creative`   | Enhance image resolution up to 4K.                                                                 | $0.25                        |
+| `control-sketch`     | Translate hand-drawn sketch to production-grade image.                                             | $0.03                        |
 
 # Usage Tips
 
@@ -137,9 +143,19 @@ Modify your `claude_desktop_config.json` file to add the following:
 
 Restart Claude Desktop and you should be ready to go:
 
-![Claude First Image](./images/claude-1.png)
+<img src="./images/claude-1.png" width="300" alt="Claude First Image">
 
-![Claude Second Image](./images/claude-2.png)
+<img src="./images/claude-2.png" width="300" alt="Claude Second Image">
+
+## Roadmap
+
+These are coming soon; but PR's are welcome! See [CONTRIBUTING.md](CONTRIBUTING.md).
+
+- `search-and-recolor` - Identify an object in an image based on a prompt, then change its color.
+- `inpaint` - A more precise version of `search-and-x` functionalities, requires mananging a mask to define to area to replace.
+- `replace-background-and-relight` - Replace background of an image, maintaining surrounding lighting effects.
+- `control-style` - Use one image to guide generation of another image.
+- `control-structure` - Maintain the setting of an image to another (e.g. for creating multiple scenes with the same backdrop).
 
 # Contributing
 
