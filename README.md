@@ -125,6 +125,8 @@ Then proceed to your preferred method of configuring the server below. If this i
 
 ### Manual Setup
 
+You're going to need Node working on your machine so you can run `npx` commands in your terminal. If you don't have Node, you can install it from [nodejs.org](https://nodejs.org/en/download).
+
 macOS: `~/Library/Application Support/Claude/claude_desktop_config.json`
 
 Windows: `%APPDATA%\Claude\claude_desktop_config.json`
