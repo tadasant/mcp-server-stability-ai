@@ -1,5 +1,5 @@
 <div align="center">
- <h1><img src="images/mcp-server-stability-ai-logo.png" width="160px"><br/>Stability AI MCP Server</h1>
+ <h1><img src="https://github.com/tadasant/mcp-server-stability-ai/blob/main/images/mcp-server-stability-ai-logo.png" width="160px"><br/>Stability AI MCP Server</h1>
  <img src="https://img.shields.io/github/license/tadasant/mcp-server-stability-ai?style=flat-square&color=purple"/>
  <img src="https://img.shields.io/npm/v/mcp-server-stability-ai?style=flat-square&color=blue"/>
 </div>
@@ -16,7 +16,23 @@ This project is NOT officially affiliated with Stability AI.
 
 Here's a teaser of how it works:
 
-![Teaser](./images/teaser.png)
+<div style="display: flex; flex-direction: column; gap: 1rem;">
+  <img class="teaser-image" src="https://github.com/tadasant/mcp-server-stability-ai/blob/main/images/teaser-1.png" style="width: 100%;" />
+  <img class="teaser-image" src="https://github.com/tadasant/mcp-server-stability-ai/blob/main/images/teaser-2.png" style="width: 100%;" />
+</div>
+
+<style>
+@media (min-width: 768px) {
+  div {
+    flex-direction: row !important;
+  }
+  .teaser-image {
+    width: 50% !important;
+  }
+}
+</style>
+
+<br/>
 
 # Table of Contents
 
@@ -143,9 +159,9 @@ Modify your `claude_desktop_config.json` file to add the following:
 
 Restart Claude Desktop and you should be ready to go:
 
-<img src="./images/claude-1.png" width="300" alt="Claude First Image">
+<img src="https://github.com/tadasant/mcp-server-stability-ai/blob/main/images/claude-1.png" width="300" alt="Claude First Image">
 
-<img src="./images/claude-2.png" width="300" alt="Claude Second Image">
+<img src="https://github.com/tadasant/mcp-server-stability-ai/blob/main/images/claude-2.png" width="300" alt="Claude Second Image">
 
 ## Roadmap
 
