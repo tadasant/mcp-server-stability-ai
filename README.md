@@ -16,9 +16,9 @@ This project is NOT officially affiliated with Stability AI.
 
 Here's a teaser of how it works:
 
-<div style="display: flex; flex-direction: row; gap: 1rem;">
-  <img src="https://github.com/tadasant/mcp-server-stability-ai/blob/main/images/teaser-1.png" style="width: 45%;" />
-  <img src="https://github.com/tadasant/mcp-server-stability-ai/blob/main/images/teaser-2.png" style="width: 45%;" />
+<div style="display: flex; flex-direction: row;">
+  <img src="https://github.com/tadasant/mcp-server-stability-ai/blob/main/images/teaser-1.png" style="width: 50%;" />
+  <img src="https://github.com/tadasant/mcp-server-stability-ai/blob/main/images/teaser-2.png" style="width: 50%;" />
 </div>
 
 <br/>
