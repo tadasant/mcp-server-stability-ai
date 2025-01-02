@@ -119,7 +119,9 @@ Create a folder directory somewhere on your machine to store generated/modified 
 - `/Users/<username>/Downloads/stability-ai-images`
 - `/Users/<username>/Library/Application Support/Claude/mcp-server-stability-ai/images`
 
-Then proceed to your preferred method of configuring the server:
+And make sure you have an [API key from Stability AI](https://platform.stability.ai/account/keys).
+
+Then proceed to your preferred method of configuring the server below. If this is your first time using MCP Servers, you'll want to make sure you have the [Claude Desktop application](https://claude.ai/download) and follow the [official MCP setup instructions](https://modelcontextprotocol.io/quickstart/user).
 
 ### Manual Setup
 
