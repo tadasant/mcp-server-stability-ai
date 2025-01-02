@@ -17,20 +17,9 @@ This project is NOT officially affiliated with Stability AI.
 Here's a teaser of how it works:
 
 <div style="display: flex; flex-direction: column; gap: 1rem;">
-  <img class="teaser-image" src="https://github.com/tadasant/mcp-server-stability-ai/blob/main/images/teaser-1.png" style="width: 100%;" />
-  <img class="teaser-image" src="https://github.com/tadasant/mcp-server-stability-ai/blob/main/images/teaser-2.png" style="width: 100%;" />
+  <img src="https://github.com/tadasant/mcp-server-stability-ai/blob/main/images/teaser-1.png" style="width: 50%;" />
+  <img src="https://github.com/tadasant/mcp-server-stability-ai/blob/main/images/teaser-2.png" style="width: 50%;" />
 </div>
-
-<style>
-@media (min-width: 768px) {
-  div {
-    flex-direction: row !important;
-  }
-  .teaser-image {
-    width: 50% !important;
-  }
-}
-</style>
 
 <br/>
 
@@ -159,9 +148,9 @@ Modify your `claude_desktop_config.json` file to add the following:
 
 Restart Claude Desktop and you should be ready to go:
 
-<img src="https://github.com/tadasant/mcp-server-stability-ai/blob/main/images/claude-1.png" width="300" alt="Claude First Image">
+<img src="https://github.com/tadasant/mcp-server-stability-ai/blob/main/images/claude-1.png" width="500" alt="Claude First Image">
 
-<img src="https://github.com/tadasant/mcp-server-stability-ai/blob/main/images/claude-2.png" width="300" alt="Claude Second Image">
+<img src="https://github.com/tadasant/mcp-server-stability-ai/blob/main/images/claude-2.png" width="500" alt="Claude Second Image">
 
 ## Roadmap
 
