@@ -2,6 +2,7 @@
  <h1><img src="https://github.com/tadasant/mcp-server-stability-ai/blob/main/images/mcp-server-stability-ai-logo.png" width="160px"><br/>Stability AI MCP Server</h1>
  <img src="https://img.shields.io/github/license/tadasant/mcp-server-stability-ai?style=flat-square&color=purple"/>
  <img src="https://img.shields.io/npm/v/mcp-server-stability-ai?style=flat-square&color=blue"/>
+ <a href="https://smithery.ai/server/mcp-server-stability-ai"><img alt="Smithery Badge" src="https://smithery.ai/badge/mcp-server-stability-ai"></a>
 </div>
 
 <br/>
@@ -122,6 +123,14 @@ Create a folder directory somewhere on your machine to store generated/modified 
 And make sure you have an [API key from Stability AI](https://platform.stability.ai/account/keys).
 
 Then proceed to your preferred method of configuring the server below. If this is your first time using MCP Servers, you'll want to make sure you have the [Claude Desktop application](https://claude.ai/download) and follow the [official MCP setup instructions](https://modelcontextprotocol.io/quickstart/user).
+
+### Installing via Smithery
+
+To install Stability AI MCP Server for Claude Desktop automatically via [Smithery](https://smithery.ai/server/mcp-server-stability-ai):
+
+```bash
+npx @smithery/cli install mcp-server-stability-ai --client claude
+```
 
 ### Manual Setup
 
