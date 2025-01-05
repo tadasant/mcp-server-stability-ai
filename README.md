@@ -154,8 +154,8 @@ Modify your `claude_desktop_config.json` file to add the following:
         "STABILITY_AI_API_KEY": "sk-1234567890",
         "IMAGE_STORAGE_DIRECTORY": "/Users/admin/Downloads/stability-ai-images"
       }
-    },
-  },
+    }
+  }
 }
 ```
 
