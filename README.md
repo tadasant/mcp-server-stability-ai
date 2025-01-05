@@ -15,6 +15,10 @@ They provide 25 credits for free. Afterward, [pay-as-you-go pricing](https://pla
 
 This project is NOT officially affiliated with Stability AI.
 
+Demo video:
+
+[![Watch the demo video](https://img.youtube.com/vi/7ceSgVC4ZLs/maxresdefault.jpg)](https://youtu.be/7ceSgVC4ZLs)
+
 Here's a teaser of how it works:
 
 <div style="display: flex; flex-direction: row;">
@@ -115,6 +119,8 @@ And then, if the output still isn't good enough, you can upscale it again:
 
 ## Claude Desktop
 
+If you prefer a video tutorial, here's [a quick one](https://youtu.be/7ceSgVC4ZLs).
+
 Create a folder directory somewhere on your machine to store generated/modified images. Some options:
 
 - `/Users/<username>/Downloads/stability-ai-images`
@@ -123,14 +129,6 @@ Create a folder directory somewhere on your machine to store generated/modified 
 And make sure you have an [API key from Stability AI](https://platform.stability.ai/account/keys).
 
 Then proceed to your preferred method of configuring the server below. If this is your first time using MCP Servers, you'll want to make sure you have the [Claude Desktop application](https://claude.ai/download) and follow the [official MCP setup instructions](https://modelcontextprotocol.io/quickstart/user).
-
-### Installing via Smithery
-
-To install Stability AI MCP Server for Claude Desktop automatically via [Smithery](https://smithery.ai/server/mcp-server-stability-ai):
-
-```bash
-npx @smithery/cli install mcp-server-stability-ai --client claude
-```
 
 ### Manual Setup
 
@@ -164,6 +162,14 @@ Restart Claude Desktop and you should be ready to go:
 <img src="https://github.com/tadasant/mcp-server-stability-ai/blob/main/images/claude-1.png" width="500" alt="Claude First Image">
 
 <img src="https://github.com/tadasant/mcp-server-stability-ai/blob/main/images/claude-2.png" width="500" alt="Claude Second Image">
+
+### Installing via Smithery
+
+To install for Claude Desktop automatically via [Smithery](https://smithery.ai/server/mcp-server-stability-ai):
+
+```bash
+npx @smithery/cli install mcp-server-stability-ai --client claude
+```
 
 ## Roadmap
 
