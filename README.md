@@ -15,11 +15,9 @@ They provide 25 credits for free. Afterward, [pay-as-you-go pricing](https://pla
 
 This project is NOT officially affiliated with Stability AI.
 
-Demo video:
+[Demo video](https://youtu.be/7ceSgVC4ZLs), and a teaser here:
 
-[![Watch the demo video](https://img.youtube.com/vi/7ceSgVC4ZLs/maxresdefault.jpg)](https://youtu.be/7ceSgVC4ZLs)
-
-Here's a teaser of how it works:
+[Teaser](https://github.com/tadasant/mcp-server-stability-ai/blob/main/images/teaser.gif)
 
 <div style="display: flex; flex-direction: row;">
   <img src="https://github.com/tadasant/mcp-server-stability-ai/blob/main/images/teaser-1.png" style="width: 48%;" />
