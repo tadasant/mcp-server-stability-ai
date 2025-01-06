@@ -159,6 +159,25 @@ Modify your `claude_desktop_config.json` file to add the following:
 }
 ```
 
+On Windows, this might look more like:
+
+```
+{
+  "mcpServers": {
+    "stability-ai": {
+      "command": "npx",
+      "args": [
+        "mcp-server-stability-ai"
+      ],
+      "env": {
+        "STABILITY_AI_API_KEY": "sk-1234567890",
+        "IMAGE_STORAGE_DIRECTORY": "C://Users//Admin//Downloads//stability-ai-images"
+      }
+    }
+  }
+}
+```
+
 Restart Claude Desktop and you should be ready to go:
 
 <img src="https://github.com/tadasant/mcp-server-stability-ai/blob/main/images/claude-1.png" width="500" alt="Claude First Image">
