@@ -72,3 +72,17 @@ test().catch(console.error);
 ```
 
 3. `npm run build` and `node build/test.js`
+
+## Publishing
+
+```
+npm run build
+```
+
+Delete any files that shouldn't be published (e.g. `build/test.js`). Then run:
+
+```
+npm run publish
+```
+
+TODO: Automate these steps.
