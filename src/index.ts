@@ -15,9 +15,6 @@ import {
 	removeBackground,
 	RemoveBackgroundArgs,
 	removeBackgroundToolDefinition,
-	SaveBase64ImageToFileArgs,
-	saveBase64ImageToFile,
-	saveBase64ImageToFileToolDefinition,
 	outpaint,
 	OutpaintArgs,
 	outpaintToolDefinition,
@@ -68,8 +65,6 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 				return generateImage(args as GenerateImageArgs);
 			case removeBackgroundToolDefinition.name:
 				return removeBackground(args as RemoveBackgroundArgs);
-			case saveBase64ImageToFileToolDefinition.name:
-				return saveBase64ImageToFile(args as SaveBase64ImageToFileArgs);
 			case outpaintToolDefinition.name:
 				return outpaint(args as OutpaintArgs);
 			case searchAndReplaceToolDefinition.name:
@@ -103,7 +98,6 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 		tools: [
 			generateImageToolDefinition,
 			removeBackgroundToolDefinition,
-			saveBase64ImageToFileToolDefinition,
 			outpaintToolDefinition,
 			searchAndReplaceToolDefinition,
 			upscaleFastToolDefinition,
