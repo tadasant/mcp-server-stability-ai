@@ -1,6 +1,5 @@
 export * from "./generateImage.js";
 export * from "./removeBackground.js";
-export * from "./saveBase64ImageToFile.js";
 export * from "./outpaint.js";
 export * from "./searchAndReplace.js";
 export * from "./upscaleFast.js";
