@@ -132,3 +132,5 @@ dist
 # project-specific
 build
 src/test.ts
+
+.DS_Store
