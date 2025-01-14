@@ -48,6 +48,37 @@ export class ResourceClient {
 		}
 	}
 
+	async createResource(uri: string, base64image: string) {
+		const filename = uri.split("/").pop();
+		if (!filename) {
+			throw new Error("Invalid file path");
+		}
+		fs.writeFileSync(
+			`${this.imageStorageDirectory}/${filename}`,
+			base64image,
+			"base64"
+		);
+
+		const fullUri = `file://${this.imageStorageDirectory}/${filename}`;
+
+		return {
+			uri: fullUri,
+			name: filename,
+			mimeType: this.getMimeType(filename),
+			text: `Image ${filename} successfully created at URI ${fullUri}.`,
+		};
+	}
+
+	// Return a resource URI as a file path. In the stdio case, this is simply a matter of stripped out the file:// prefix.
+	// TODO: in the SSE case, we want to actually download the file from external storage and (temporarily) store it locally while we stream it to Stability. Also will need to handle deletion after the fact (maybe refactor to use a temp directory in both stdio and SSE cases)
+	async resourceToFile(uri: string) {
+		const filename = uri.split("/").pop();
+		if (!filename) {
+			throw new Error("Invalid file path");
+		}
+		return uri.replace("file://", "");
+	}
+
 	private getMimeType(filename: string): string {
 		const ext = filename.toLowerCase().split(".").pop();
 		switch (ext) {

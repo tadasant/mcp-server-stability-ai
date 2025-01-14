@@ -111,10 +111,10 @@ export class StabilityAiApiClient {
 	}
 
 	async removeBackground(
-		imageFileLocation: string
+		imageFilePath: string
 	): Promise<{ base64Image: string }> {
 		const payload = {
-			image: fs.createReadStream(imageFileLocation),
+			image: fs.createReadStream(imageFilePath),
 			output_format: "png",
 		};
 
@@ -140,11 +140,11 @@ export class StabilityAiApiClient {
 	}
 
 	async outpaint(
-		imageFileLocation: string,
+		imageFilePath: string,
 		options: OutpaintOptions
 	): Promise<{ base64Image: string }> {
 		const payload = {
-			image: fs.createReadStream(imageFileLocation),
+			image: fs.createReadStream(imageFilePath),
 			output_format: options.outputFormat || "png",
 			left: options.left || 0,
 			right: options.right || 0,
@@ -179,11 +179,11 @@ export class StabilityAiApiClient {
 	}
 
 	async searchAndReplace(
-		imageFileLocation: string,
+		imageFilePath: string,
 		options: SearchAndReplaceOptions
 	): Promise<{ base64Image: string }> {
 		const payload = {
-			image: fs.createReadStream(imageFileLocation),
+			image: fs.createReadStream(imageFilePath),
 			output_format: "png",
 			search_prompt: options.searchPrompt,
 			prompt: options.prompt,
@@ -210,11 +210,9 @@ export class StabilityAiApiClient {
 		}
 	}
 
-	async upscaleFast(
-		imageFileLocation: string
-	): Promise<{ base64Image: string }> {
+	async upscaleFast(imageFilePath: string): Promise<{ base64Image: string }> {
 		const payload = {
-			image: fs.createReadStream(imageFileLocation),
+			image: fs.createReadStream(imageFilePath),
 			output_format: "png",
 		};
 
@@ -272,11 +270,11 @@ export class StabilityAiApiClient {
 	}
 
 	async upscaleCreative(
-		imageFileLocation: string,
+		imageFilePath: string,
 		options: UpscaleCreativeOptions
 	): Promise<{ base64Image: string }> {
 		const payload = {
-			image: fs.createReadStream(imageFileLocation),
+			image: fs.createReadStream(imageFilePath),
 			prompt: options.prompt,
 			output_format: options.outputFormat || "png",
 			...(options.negativePrompt && {
@@ -314,11 +312,11 @@ export class StabilityAiApiClient {
 	}
 
 	async controlSketch(
-		imageFileLocation: string,
+		imageFilePath: string,
 		options: ControlSketchOptions
 	): Promise<{ base64Image: string }> {
 		const payload = {
-			image: fs.createReadStream(imageFileLocation),
+			image: fs.createReadStream(imageFilePath),
 			prompt: options.prompt,
 			output_format: options.outputFormat || "png",
 			...(options.controlStrength !== undefined && {

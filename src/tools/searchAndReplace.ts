@@ -1,10 +1,10 @@
 import { StabilityAiApiClient } from "../stabilityAi/stabilityAiApiClient.js";
-import * as fs from "fs";
+import { ResourceClient } from "../resources/resourceClient.js";
 import open from "open";
 import { z } from "zod";
 
 const SearchAndReplaceArgsSchema = z.object({
-	imageFileLocation: z.string(),
+	imageFileUri: z.string(),
 	searchPrompt: z.string().max(10000),
 	prompt: z.string().max(10000),
 });
@@ -17,9 +17,9 @@ export const searchAndReplaceToolDefinition = {
 	inputSchema: {
 		type: "object",
 		properties: {
-			imageFileLocation: {
+			imageFileUri: {
 				type: "string",
-				description: `The absolute path to the image file on the filesystem.`,
+				description: `The URI to the image file. It should start with file://`,
 			},
 			searchPrompt: {
 				type: "string",
@@ -30,41 +30,40 @@ export const searchAndReplaceToolDefinition = {
 				description: "What you wish to see in place of the searched content",
 			},
 		},
-		required: ["imageFileLocation", "searchPrompt", "prompt"],
+		required: ["imageFileUri", "searchPrompt", "prompt"],
 	},
 };
 
 export async function searchAndReplace(args: SearchAndReplaceArgs) {
 	const validatedArgs = SearchAndReplaceArgsSchema.parse(args);
 
+	const resourceClient = new ResourceClient(
+		process.env.IMAGE_STORAGE_DIRECTORY
+	);
+	const imageFilePath = await resourceClient.resourceToFile(
+		validatedArgs.imageFileUri
+	);
+
 	const client = new StabilityAiApiClient(process.env.STABILITY_AI_API_KEY!);
 
-	const response = await client.searchAndReplace(
-		validatedArgs.imageFileLocation,
-		validatedArgs
-	);
+	const response = await client.searchAndReplace(imageFilePath, validatedArgs);
 
 	const imageAsBase64 = response.base64Image;
 	const filename = `${Date.now()}.png`;
 
-	const IMAGE_STORAGE_DIRECTORY = process.env.IMAGE_STORAGE_DIRECTORY;
-	fs.mkdirSync(IMAGE_STORAGE_DIRECTORY, { recursive: true });
-	fs.writeFileSync(
-		`${IMAGE_STORAGE_DIRECTORY}/${filename}`,
-		imageAsBase64,
-		"base64"
-	);
-	open(`${IMAGE_STORAGE_DIRECTORY}/${filename}`);
+	const resource = await resourceClient.createResource(filename, imageAsBase64);
+	const file_location = resource.uri.replace("file://", "");
+	open(file_location);
 
 	return {
 		content: [
 			{
 				type: "text",
-				text: `Processed image "${validatedArgs.imageFileLocation}" to replace "${validatedArgs.searchPrompt}" with "${validatedArgs.prompt}"`,
+				text: `Processed image "${validatedArgs.imageFileUri}" to replace "${validatedArgs.searchPrompt}" with "${validatedArgs.prompt}"`,
 			},
 			{
-				type: "text",
-				text: `Automatically opened the file on the user's device: it is located at ${IMAGE_STORAGE_DIRECTORY}/${filename}`,
+				type: "resource",
+				resource: resource,
 			},
 		],
 	};

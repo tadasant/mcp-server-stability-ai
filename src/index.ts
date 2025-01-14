@@ -32,9 +32,8 @@ import {
 	controlSketch,
 	ControlSketchArgs,
 	controlSketchToolDefinition,
-	findFileLocation,
-	FindFileLocationArgs,
-	findFileLocationToolDefinition,
+	listResources,
+	listResourcesToolDefinition,
 } from "./tools/index.js";
 import { ResourceClient } from "./resources/resourceClient.js";
 
@@ -110,8 +109,8 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 				return upscaleCreative(args as UpscaleCreativeArgs);
 			case controlSketchToolDefinition.name:
 				return controlSketch(args as ControlSketchArgs);
-			case findFileLocationToolDefinition.name:
-				return findFileLocation(args as FindFileLocationArgs);
+			case listResourcesToolDefinition.name:
+				return listResources();
 			default:
 				throw new Error(`Unknown tool: ${name}`);
 		}
@@ -138,7 +137,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 			upscaleFastToolDefinition,
 			upscaleCreativeToolDefinition,
 			controlSketchToolDefinition,
-			findFileLocationToolDefinition,
+			listResourcesToolDefinition,
 		],
 	};
 });

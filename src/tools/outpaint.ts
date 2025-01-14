@@ -1,10 +1,10 @@
 import { z } from "zod";
 import { StabilityAiApiClient } from "../stabilityAi/stabilityAiApiClient.js";
-import * as fs from "fs";
 import open from "open";
+import { ResourceClient } from "../resources/resourceClient.js";
 
 const OutpaintArgsSchema = z.object({
-	imageFileLocation: z.string(),
+	imageFileUri: z.string(),
 	left: z.number().min(0).max(2000).optional(),
 	right: z.number().min(0).max(2000).optional(),
 	up: z.number().min(0).max(2000).optional(),
@@ -21,9 +21,9 @@ export const outpaintToolDefinition = {
 	inputSchema: {
 		type: "object",
 		properties: {
-			imageFileLocation: {
+			imageFileUri: {
 				type: "string",
-				description: `The absolute path to the image file on the filesystem.`,
+				description: `The URI to the image file. It should start with file://`,
 			},
 			left: {
 				type: "number",
@@ -50,12 +50,19 @@ export const outpaintToolDefinition = {
 				description: "The prompt to use for the outpaint operation",
 			},
 		},
-		required: ["imageFileLocation"],
+		required: ["imageFileUri"],
 	},
 };
 
 export async function outpaint(args: OutpaintArgs) {
 	const validatedArgs = OutpaintArgsSchema.parse(args);
+
+	const resourceClient = new ResourceClient(
+		process.env.IMAGE_STORAGE_DIRECTORY
+	);
+	const imageFilePath = await resourceClient.resourceToFile(
+		validatedArgs.imageFileUri
+	);
 
 	// Ensure at least one direction is specified
 	if (
@@ -71,32 +78,25 @@ export async function outpaint(args: OutpaintArgs) {
 
 	const client = new StabilityAiApiClient(process.env.STABILITY_AI_API_KEY!);
 
-	const response = await client.outpaint(
-		validatedArgs.imageFileLocation,
-		validatedArgs
-	);
+	const response = await client.outpaint(imageFilePath, validatedArgs);
 
 	const imageAsBase64 = response.base64Image;
 	const filename = `${Date.now()}.png`;
 
-	const IMAGE_STORAGE_DIRECTORY = process.env.IMAGE_STORAGE_DIRECTORY;
-	fs.mkdirSync(IMAGE_STORAGE_DIRECTORY, { recursive: true });
-	fs.writeFileSync(
-		`${IMAGE_STORAGE_DIRECTORY}/${filename}`,
-		imageAsBase64,
-		"base64"
-	);
-	open(`${IMAGE_STORAGE_DIRECTORY}/${filename}`);
+	const resource = await resourceClient.createResource(filename, imageAsBase64);
+
+	const file_location = resource.uri.replace("file://", "");
+	open(file_location);
 
 	return {
 		content: [
 			{
 				type: "text",
-				text: `Processed image "${validatedArgs.imageFileLocation}" to outpaint`,
+				text: `Processed image "${validatedArgs.imageFileUri}" to outpaint`,
 			},
 			{
-				type: "text",
-				text: `Automatically opened the file on the user's device: it is located at ${IMAGE_STORAGE_DIRECTORY}/${filename}`,
+				type: "resource",
+				resource: resource,
 			},
 		],
 	};

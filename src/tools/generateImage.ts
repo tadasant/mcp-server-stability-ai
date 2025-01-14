@@ -1,7 +1,7 @@
 import { StabilityAiApiClient } from "../stabilityAi/stabilityAiApiClient.js";
-import * as fs from "fs";
 import open from "open";
 import { z } from "zod";
+import { ResourceClient } from "../resources/resourceClient.js";
 
 // Constants for shared values
 const ASPECT_RATIOS = [
@@ -99,27 +99,27 @@ export const generateImage = async (args: GenerateImageArgs) => {
 		negativePrompt,
 		stylePreset,
 	});
+
 	const imageAsBase64 = response.base64Image;
 	const filename = `${Date.now()}.png`;
 
-	const IMAGE_STORAGE_DIRECTORY = process.env.IMAGE_STORAGE_DIRECTORY;
-	fs.mkdirSync(IMAGE_STORAGE_DIRECTORY, { recursive: true });
-	fs.writeFileSync(
-		`${IMAGE_STORAGE_DIRECTORY}/${filename}`,
-		imageAsBase64,
-		"base64"
+	const resourceClient = new ResourceClient(
+		process.env.IMAGE_STORAGE_DIRECTORY
 	);
-	open(`${IMAGE_STORAGE_DIRECTORY}/${filename}`);
+	const resource = await resourceClient.createResource(filename, imageAsBase64);
+
+	const file_location = resource.uri.replace("file://", "");
+	open(file_location);
 
 	return {
 		content: [
 			{
 				type: "text",
-				text: `Processed \`${prompt}\` to get image`,
+				text: `Processed \`${prompt}\` to create the following image:`,
 			},
 			{
-				type: "text",
-				text: `Automatically opened the file on the user's device: it is located at ${IMAGE_STORAGE_DIRECTORY}/${filename}`,
+				type: "resource",
+				resource: resource,
 			},
 		],
 	};
