@@ -4,7 +4,9 @@ import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import {
 	CallToolRequestSchema,
+	ListResourcesRequestSchema,
 	ListToolsRequestSchema,
+	ReadResourceRequestSchema,
 } from "@modelcontextprotocol/sdk/types.js";
 import { z } from "zod";
 import * as dotenv from "dotenv";
@@ -34,6 +36,7 @@ import {
 	FindFileLocationArgs,
 	findFileLocationToolDefinition,
 } from "./tools/index.js";
+import { ResourceClient } from "./resources/resourceClient.js";
 
 dotenv.config();
 
@@ -61,11 +64,33 @@ const server = new Server(
 	{
 		capabilities: {
 			tools: {},
+			resources: {},
 		},
 	}
 );
 
-// Handle tool execution
+server.setRequestHandler(ListResourcesRequestSchema, async () => {
+	const resourceClient = new ResourceClient(
+		process.env.IMAGE_STORAGE_DIRECTORY
+	);
+	const resources = await resourceClient.listResources();
+
+	return {
+		resources,
+	};
+});
+
+server.setRequestHandler(ReadResourceRequestSchema, async (request) => {
+	const resourceClient = new ResourceClient(
+		process.env.IMAGE_STORAGE_DIRECTORY
+	);
+	const resource = await resourceClient.readResource(request.params.uri);
+
+	return {
+		contents: [resource],
+	};
+});
+
 server.setRequestHandler(CallToolRequestSchema, async (request) => {
 	const { name, arguments: args } = request.params;
 
