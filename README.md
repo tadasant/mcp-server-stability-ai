@@ -67,8 +67,8 @@ This server is built and tested on macOS with Claude Desktop. It should work wit
 
 # Usage Tips
 
-- All processed images are automatically saved to your configured `IMAGE_STORAGE_DIRECTORY` and opened for preview
-- Unfortunately, pasting images into the Claude Desktop chat window results in a very inefficient experience (generating entire blocks of base64 text rapidly fills the context window for anything but the simplest of images). So we take a very file-forward approach: you should copy image files you want processed to your `IMAGE_STORAGE_DIRECTORY` and then just reference them by filename in your chats with Claude.
+- All processed images are automatically saved to `IMAGE_STORAGE_DIRECTORY`, opened for preview, and made available as resources
+- Do _not_ try to copy/paste or upload image files to Claude. Claude does not store images anywhere, so we cannot work with those with the MCP server. They have to be "uploaded" (saved to) the `IMAGE_STORAGE_DIRECTORY` and then they will show up as resources available in the chat.
 
 # Examples
 
@@ -114,10 +114,10 @@ And then, if the output still isn't good enough, you can upscale it again:
 
 ## Cheatsheet
 
-| Environment Variable      | Description                                                                                               | Example                                      |
-| ------------------------- | --------------------------------------------------------------------------------------------------------- | -------------------------------------------- |
-| `STABILITY_AI_API_KEY`    | Your Stability AI API key. Get one at [platform.stability.ai](https://platform.stability.ai/account/keys) | `sk-1234567890`                              |
-| `IMAGE_STORAGE_DIRECTORY` | Directory where generated images will be saved                                                            | `/Users/admin/Downloads/stability-ai-images` |
+| Environment Variable      | Description                                                                                               | Required | Default Value                                                                           | Example                                      |
+| ------------------------- | --------------------------------------------------------------------------------------------------------- | -------- | --------------------------------------------------------------------------------------- | -------------------------------------------- |
+| `STABILITY_AI_API_KEY`    | Your Stability AI API key. Get one at [platform.stability.ai](https://platform.stability.ai/account/keys) | Y        | N/A                                                                                     | `sk-1234567890`                              |
+| `IMAGE_STORAGE_DIRECTORY` | Directory where generated images will be saved                                                            | N        | `/tmp/tadasant-mcp-server-stability-ai` OR `C:\\Windows\\Temp\\mcp-server-stability-ai` | `/Users/admin/Downloads/stability-ai-images` |
 
 ## Claude Desktop
 
