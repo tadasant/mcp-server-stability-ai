@@ -1,58 +1,63 @@
 import { StabilityAiApiClient } from "../stabilityAi/stabilityAiApiClient.js";
-import * as fs from "fs";
 import open from "open";
 import { z } from "zod";
+import { ResourceClient } from "../resources/resourceClient.js";
 
 const UpscaleFastArgsSchema = z.object({
-	imageFileLocation: z.string(),
+	imageFileUri: z.string(),
 });
 
 export type UpscaleFastArgs = z.infer<typeof UpscaleFastArgsSchema>;
 
 export const upscaleFastToolDefinition = {
 	name: "stability-ai-upscale-fast",
-	description: `Enhance image resolution by 4x using AI.`,
+	description: `Cheap and fast tool to enhance image resolution by 4x.`,
 	inputSchema: {
 		type: "object",
 		properties: {
-			imageFileLocation: {
+			imageFileUri: {
 				type: "string",
-				description: `The absolute path to the image file on the filesystem.`,
+				description: `The URI to the image file. It should start with file://`,
 			},
 		},
-		required: ["imageFileLocation"],
+		required: ["imageFileUri"],
 	},
 };
 
 export async function upscaleFast(args: UpscaleFastArgs) {
 	const validatedArgs = UpscaleFastArgsSchema.parse(args);
 
+	const resourceClient = new ResourceClient(
+		process.env.IMAGE_STORAGE_DIRECTORY
+	);
+	const imageFilePath = await resourceClient.resourceToFile(
+		validatedArgs.imageFileUri
+	);
+
 	const client = new StabilityAiApiClient(process.env.STABILITY_AI_API_KEY!);
 
 	try {
-		const response = await client.upscaleFast(validatedArgs.imageFileLocation);
+		const response = await client.upscaleFast(imageFilePath);
 
 		const imageAsBase64 = response.base64Image;
 		const filename = `${Date.now()}.png`;
 
-		const IMAGE_STORAGE_DIRECTORY = process.env.IMAGE_STORAGE_DIRECTORY;
-		fs.mkdirSync(IMAGE_STORAGE_DIRECTORY, { recursive: true });
-		fs.writeFileSync(
-			`${IMAGE_STORAGE_DIRECTORY}/${filename}`,
-			imageAsBase64,
-			"base64"
+		const resource = await resourceClient.createResource(
+			filename,
+			imageAsBase64
 		);
-		open(`${IMAGE_STORAGE_DIRECTORY}/${filename}`);
+		const file_location = resource.uri.replace("file://", "");
+		open(file_location);
 
 		return {
 			content: [
 				{
 					type: "text",
-					text: `Processed image "${validatedArgs.imageFileLocation}" to upscale by 4x`,
+					text: `Processed image "${validatedArgs.imageFileUri}" to upscale by 4x`,
 				},
 				{
-					type: "text",
-					text: `Automatically opened the file on the user's device: it is located at ${IMAGE_STORAGE_DIRECTORY}/${filename}`,
+					type: "resource",
+					resource: resource,
 				},
 				{
 					type: "text",

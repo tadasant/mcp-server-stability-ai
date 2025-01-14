@@ -1,10 +1,10 @@
 import { StabilityAiApiClient } from "../stabilityAi/stabilityAiApiClient.js";
-import * as fs from "fs";
 import open from "open";
 import { z } from "zod";
+import { ResourceClient } from "../resources/resourceClient.js";
 
 const ControlSketchArgsSchema = z.object({
-	imageFileLocation: z.string(),
+	imageFileUri: z.string(),
 	prompt: z.string(),
 	controlStrength: z.number().min(0).max(1).optional(),
 	negativePrompt: z.string().optional(),
@@ -18,9 +18,9 @@ export const controlSketchToolDefinition = {
 	inputSchema: {
 		type: "object",
 		properties: {
-			imageFileLocation: {
+			imageFileUri: {
 				type: "string",
-				description: `The absolute path to the image file on the filesystem.`,
+				description: `The URI to the image file. It should start with file://`,
 			},
 			prompt: {
 				type: "string",
@@ -39,7 +39,7 @@ export const controlSketchToolDefinition = {
 				description: "What you do not wish to see in the output image.",
 			},
 		},
-		required: ["imageFileLocation", "prompt"],
+		required: ["imageFileUri", "prompt"],
 	},
 };
 
@@ -48,37 +48,40 @@ export async function controlSketch(args: ControlSketchArgs) {
 
 	const client = new StabilityAiApiClient(process.env.STABILITY_AI_API_KEY!);
 
+	const resourceClient = new ResourceClient(
+		process.env.IMAGE_STORAGE_DIRECTORY
+	);
+	const imageFilePath = await resourceClient.resourceToFile(
+		validatedArgs.imageFileUri
+	);
+
 	try {
-		const response = await client.controlSketch(
-			validatedArgs.imageFileLocation,
-			{
-				prompt: validatedArgs.prompt,
-				controlStrength: validatedArgs.controlStrength,
-				negativePrompt: validatedArgs.negativePrompt,
-			}
-		);
+		const response = await client.controlSketch(imageFilePath, {
+			prompt: validatedArgs.prompt,
+			controlStrength: validatedArgs.controlStrength,
+			negativePrompt: validatedArgs.negativePrompt,
+		});
 
 		const imageAsBase64 = response.base64Image;
 		const filename = `${Date.now()}.png`;
 
-		const IMAGE_STORAGE_DIRECTORY = process.env.IMAGE_STORAGE_DIRECTORY;
-		fs.mkdirSync(IMAGE_STORAGE_DIRECTORY, { recursive: true });
-		fs.writeFileSync(
-			`${IMAGE_STORAGE_DIRECTORY}/${filename}`,
-			imageAsBase64,
-			"base64"
+		const resource = await resourceClient.createResource(
+			filename,
+			imageAsBase64
 		);
-		open(`${IMAGE_STORAGE_DIRECTORY}/${filename}`);
+
+		const file_location = resource.uri.replace("file://", "");
+		open(file_location);
 
 		return {
 			content: [
 				{
 					type: "text",
-					text: `Processed sketch "${validatedArgs.imageFileLocation}" with prompt "${validatedArgs.prompt}"`,
+					text: `Processed sketch "${validatedArgs.imageFileUri}" with prompt "${validatedArgs.prompt}" to create the following image:`,
 				},
 				{
-					type: "text",
-					text: `Automatically opened the file on the user's device: it is located at ${IMAGE_STORAGE_DIRECTORY}/${filename}`,
+					type: "resource",
+					resource: resource,
 				},
 			],
 		};
