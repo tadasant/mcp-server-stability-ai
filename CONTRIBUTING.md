@@ -25,7 +25,7 @@ npx openapi-typescript openapi.json -o /path/to/mcp-server-stability/src/stabili
 ### Running Inspector
 
 ```
-npx @modelcontextprotocol/inspector node path/to/mcp-server-stability/build/index.js
+npx @modelcontextprotocol/inspector node path/to/mcp-server-stability-ai/build/index.js
 ```
 
 ### Claude
