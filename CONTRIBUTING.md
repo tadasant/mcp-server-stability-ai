@@ -1,3 +1,5 @@
+# Contributing
+
 Before starting any work, please open an Issue to discuss the changes you'd like to make; let's make sure we don't duplicate effort.
 
 Please do all your work on a fork of the repository and open a PR against the main branch.

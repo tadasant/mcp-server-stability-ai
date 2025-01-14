@@ -37,10 +37,20 @@ import {
 
 dotenv.config();
 
-if (!process.env.STABILITY_AI_API_KEY || !process.env.IMAGE_STORAGE_DIRECTORY) {
-	throw new Error(
-		"STABILITY_AI_API_KEY and IMAGE_STORAGE_DIRECTORY are required environment variables"
-	);
+if (!process.env.IMAGE_STORAGE_DIRECTORY) {
+	if (process.platform === "win32") {
+		// Windows
+		process.env.IMAGE_STORAGE_DIRECTORY =
+			"C:\\Windows\\Temp\\mcp-server-stability-ai";
+	} else {
+		// macOS or Linux
+		process.env.IMAGE_STORAGE_DIRECTORY =
+			"/tmp/tadasant-mcp-server-stability-ai";
+	}
+}
+
+if (!process.env.STABILITY_AI_API_KEY) {
+	throw new Error("STABILITY_AI_API_KEY is a required environment variable");
 }
 
 const server = new Server(
