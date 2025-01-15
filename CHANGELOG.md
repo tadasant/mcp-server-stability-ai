@@ -1,6 +1,6 @@
 # Changelog
 
-## Pre-release
+## 0.1.0
 
 - Remove base64 encoding approach to saving images to filesystem (wasn't properly functional)
 - Remove requirement to set `IMAGE_STORAGE_DIRECTORY` environment variable in favor of reasonable defaults per OS
