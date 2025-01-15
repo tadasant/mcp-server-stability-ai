@@ -3,7 +3,7 @@ import { ResourceClient } from "../resources/resourceClient.js";
 export const listResourcesToolDefinition = {
 	name: "stability-ai-0-list-resources",
 	description:
-		"Pull in a list of all of user's available Resources (i.e. image files and their URI's) so we can reference pre-existing images to manipulate or upload to Stability AI.",
+		"Use this to check for files before deciding you don't have access to a file or image or resource. It pulls in a list of all of user's available Resources (i.e. image files and their URI's) so we can reference pre-existing images to manipulate or upload to Stability AI.",
 	inputSchema: {
 		type: "object",
 		properties: {},
@@ -25,7 +25,7 @@ export const listResources = async () => {
 				uri: r.uri,
 				name: r.name,
 				mimeType: r.mimeType,
-				text: `Image: ${r.name}`,
+				text: `Image: ${r.name} at URI: ${r.uri}`,
 			},
 		})),
 	};

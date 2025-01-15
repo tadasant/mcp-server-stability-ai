@@ -7,6 +7,7 @@ const SearchAndReplaceArgsSchema = z.object({
 	imageFileUri: z.string(),
 	searchPrompt: z.string().max(10000),
 	prompt: z.string().max(10000),
+	outputImageFileName: z.string(),
 });
 
 export type SearchAndReplaceArgs = z.infer<typeof SearchAndReplaceArgsSchema>;
@@ -29,8 +30,13 @@ export const searchAndReplaceToolDefinition = {
 				type: "string",
 				description: "What you wish to see in place of the searched content",
 			},
+			outputImageFileName: {
+				type: "string",
+				description:
+					"The desired name of the output image file, no file extension. Make it descriptive but short. Lowercase, dash-separated, no special characters.",
+			},
 		},
-		required: ["imageFileUri", "searchPrompt", "prompt"],
+		required: ["imageFileUri", "searchPrompt", "prompt", "outputImageFileName"],
 	},
 };
 
@@ -49,7 +55,7 @@ export async function searchAndReplace(args: SearchAndReplaceArgs) {
 	const response = await client.searchAndReplace(imageFilePath, validatedArgs);
 
 	const imageAsBase64 = response.base64Image;
-	const filename = `${Date.now()}.png`;
+	const filename = `${validatedArgs.outputImageFileName}.png`;
 
 	const resource = await resourceClient.createResource(filename, imageAsBase64);
 	const file_location = resource.uri.replace("file://", "");

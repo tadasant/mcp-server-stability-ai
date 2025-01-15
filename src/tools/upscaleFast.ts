@@ -5,6 +5,7 @@ import { ResourceClient } from "../resources/resourceClient.js";
 
 const UpscaleFastArgsSchema = z.object({
 	imageFileUri: z.string(),
+	outputImageFileName: z.string(),
 });
 
 export type UpscaleFastArgs = z.infer<typeof UpscaleFastArgsSchema>;
@@ -19,8 +20,13 @@ export const upscaleFastToolDefinition = {
 				type: "string",
 				description: `The URI to the image file. It should start with file://`,
 			},
+			outputImageFileName: {
+				type: "string",
+				description:
+					"The desired name of the output image file, no file extension. Make it descriptive but short. Lowercase, dash-separated, no special characters.",
+			},
 		},
-		required: ["imageFileUri"],
+		required: ["imageFileUri", "outputImageFileName"],
 	},
 };
 
@@ -40,7 +46,7 @@ export async function upscaleFast(args: UpscaleFastArgs) {
 		const response = await client.upscaleFast(imageFilePath);
 
 		const imageAsBase64 = response.base64Image;
-		const filename = `${Date.now()}.png`;
+		const filename = `${validatedArgs.outputImageFileName}.png`;
 
 		const resource = await resourceClient.createResource(
 			filename,

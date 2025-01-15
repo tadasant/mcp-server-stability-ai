@@ -8,6 +8,7 @@ const UpscaleCreativeArgsSchema = z.object({
 	prompt: z.string(),
 	negativePrompt: z.string().optional(),
 	creativity: z.number().min(0).max(0.35).optional(),
+	outputImageFileName: z.string(),
 });
 
 export type UpscaleCreativeArgs = z.infer<typeof UpscaleCreativeArgsSchema>;
@@ -37,8 +38,13 @@ export const upscaleCreativeToolDefinition = {
 				description:
 					"Optional value (0-0.35) indicating how creative the model should be. Higher values add more details during upscaling.",
 			},
+			outputImageFileName: {
+				type: "string",
+				description:
+					"The desired name of the output image file, no file extension. Make it descriptive but short. Lowercase, dash-separated, no special characters.",
+			},
 		},
-		required: ["imageFileUri", "prompt"],
+		required: ["imageFileUri", "prompt", "outputImageFileName"],
 	},
 };
 
@@ -62,7 +68,7 @@ export async function upscaleCreative(args: UpscaleCreativeArgs) {
 		});
 
 		const imageAsBase64 = response.base64Image;
-		const filename = `${Date.now()}.png`;
+		const filename = `${validatedArgs.outputImageFileName}.png`;
 
 		const resource = await resourceClient.createResource(
 			filename,
