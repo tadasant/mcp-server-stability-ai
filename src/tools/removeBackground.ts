@@ -1,8 +1,14 @@
 import { StabilityAiApiClient } from "../stabilityAi/stabilityAiApiClient.js";
 import { ResourceClient } from "../resources/resourceClient.js";
 import open from "open";
+import { z } from "zod";
 
-export type RemoveBackgroundArgs = { imageFileUri: string };
+const RemoveBackgroundArgsSchema = z.object({
+	imageFileUri: z.string(),
+	outputImageFileName: z.string(),
+});
+
+export type RemoveBackgroundArgs = z.infer<typeof RemoveBackgroundArgsSchema>;
 
 export const removeBackgroundToolDefinition = {
 	name: "stability-ai-remove-background",
@@ -13,6 +19,11 @@ export const removeBackgroundToolDefinition = {
 			imageFileUri: {
 				type: "string",
 				description: `The URI to the image file. It should start with file://`,
+			},
+			outputImageFileName: {
+				type: "string",
+				description:
+					"The desired name of the output image file, no file extension. Make it descriptive but short. Lowercase, dash-separated, no special characters.",
 			},
 		},
 		required: ["imageFileUri"],
@@ -26,10 +37,10 @@ export const removeBackground = async (args: RemoveBackgroundArgs) => {
 	);
 
 	const imageFilePath = await resourceClient.resourceToFile(args.imageFileUri);
-	const response = await client.removeBackground(args.imageFileUri);
+	const response = await client.removeBackground(imageFilePath);
 
 	const imageAsBase64 = response.base64Image;
-	const filename = `${Date.now()}.png`;
+	const filename = `${args.outputImageFileName}.png`;
 
 	const resource = await resourceClient.createResource(filename, imageAsBase64);
 	const file_location = resource.uri.replace("file://", "");

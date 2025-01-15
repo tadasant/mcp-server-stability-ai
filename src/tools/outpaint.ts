@@ -11,6 +11,7 @@ const OutpaintArgsSchema = z.object({
 	down: z.number().min(0).max(2000).optional(),
 	creativity: z.number().min(0).max(1).optional(),
 	prompt: z.string().max(10000).optional(),
+	outputImageFileName: z.string(),
 });
 
 export type OutpaintArgs = z.infer<typeof OutpaintArgsSchema>;
@@ -49,8 +50,13 @@ export const outpaintToolDefinition = {
 				type: "string",
 				description: "The prompt to use for the outpaint operation",
 			},
+			outputImageFileName: {
+				type: "string",
+				description:
+					"The desired name of the output image file, no file extension. Make it descriptive but short. Lowercase, dash-separated, no special characters.",
+			},
 		},
-		required: ["imageFileUri"],
+		required: ["imageFileUri", "outputImageFileName"],
 	},
 };
 
@@ -81,7 +87,7 @@ export async function outpaint(args: OutpaintArgs) {
 	const response = await client.outpaint(imageFilePath, validatedArgs);
 
 	const imageAsBase64 = response.base64Image;
-	const filename = `${Date.now()}.png`;
+	const filename = `${validatedArgs.outputImageFileName}.png`;
 
 	const resource = await resourceClient.createResource(filename, imageAsBase64);
 

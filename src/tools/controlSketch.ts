@@ -8,6 +8,7 @@ const ControlSketchArgsSchema = z.object({
 	prompt: z.string(),
 	controlStrength: z.number().min(0).max(1).optional(),
 	negativePrompt: z.string().optional(),
+	outputImageFileName: z.string(),
 });
 
 export type ControlSketchArgs = z.infer<typeof ControlSketchArgsSchema>;
@@ -38,8 +39,13 @@ export const controlSketchToolDefinition = {
 				type: "string",
 				description: "What you do not wish to see in the output image.",
 			},
+			outputImageFileName: {
+				type: "string",
+				description:
+					"The desired name of the output image file, no file extension. Make it descriptive but short. Lowercase, dash-separated, no special characters.",
+			},
 		},
-		required: ["imageFileUri", "prompt"],
+		required: ["imageFileUri", "prompt", "outputImageFileName"],
 	},
 };
 
@@ -63,7 +69,7 @@ export async function controlSketch(args: ControlSketchArgs) {
 		});
 
 		const imageAsBase64 = response.base64Image;
-		const filename = `${Date.now()}.png`;
+		const filename = `${validatedArgs.outputImageFileName}.png`;
 
 		const resource = await resourceClient.createResource(
 			filename,

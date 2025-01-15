@@ -43,6 +43,8 @@ const DESCRIPTIONS = {
 	negativePrompt:
 		"A blurb of text describing what you do not wish to see in the output image. This is an advanced feature.",
 	stylePreset: "Guides the image model towards a particular style.",
+	outputImageFileName:
+		"The desired name of the output image file, no file extension. Make it descriptive but short. Lowercase, dash-separated, no special characters.",
 } as const;
 
 // Zod schema
@@ -51,6 +53,7 @@ const GenerateImageArgsSchema = z.object({
 	aspectRatio: z.enum(ASPECT_RATIOS).optional().default("1:1"),
 	negativePrompt: z.string().max(10000).optional(),
 	stylePreset: z.enum(STYLE_PRESETS).optional(),
+	outputImageFileName: z.string(),
 });
 
 export type GenerateImageArgs = z.infer<typeof GenerateImageArgsSchema>;
@@ -84,14 +87,23 @@ export const generateImageToolDefinition = {
 				enum: STYLE_PRESETS,
 				description: DESCRIPTIONS.stylePreset,
 			},
+			outputImageFileName: {
+				type: "string",
+				description: DESCRIPTIONS.outputImageFileName,
+			},
 		},
-		required: ["prompt"],
+		required: ["prompt", "outputImageFileName"],
 	},
 } as const;
 
 export const generateImage = async (args: GenerateImageArgs) => {
-	const { prompt, aspectRatio, negativePrompt, stylePreset } =
-		GenerateImageArgsSchema.parse(args);
+	const {
+		prompt,
+		aspectRatio,
+		negativePrompt,
+		stylePreset,
+		outputImageFileName,
+	} = GenerateImageArgsSchema.parse(args);
 
 	const client = new StabilityAiApiClient(process.env.STABILITY_AI_API_KEY);
 	const response = await client.generateImageCore(prompt, {
@@ -101,7 +113,7 @@ export const generateImage = async (args: GenerateImageArgs) => {
 	});
 
 	const imageAsBase64 = response.base64Image;
-	const filename = `${Date.now()}.png`;
+	const filename = `${outputImageFileName}.png`;
 
 	const resourceClient = new ResourceClient(
 		process.env.IMAGE_STORAGE_DIRECTORY

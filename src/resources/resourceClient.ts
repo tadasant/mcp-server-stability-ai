@@ -9,11 +9,11 @@ export class ResourceClient {
 			withFileTypes: true,
 		});
 
-		return resources.map((resource) => ({
-			uri: `file://${this.imageStorageDirectory}/${resource.name}`,
-			name: resource.name,
-			mimeType: this.getMimeType(resource.name),
-		}));
+		return resources.map((resource) => {
+			const uri = `file://${this.imageStorageDirectory}/${resource.name}`;
+			const mimeType = this.getMimeType(resource.name);
+			return { uri, name: resource.name, mimeType };
+		});
 	}
 
 	async readResource(uri: string): Promise<Resource> {
@@ -53,19 +53,30 @@ export class ResourceClient {
 		if (!filename) {
 			throw new Error("Invalid file path");
 		}
+
+		// Split filename into name and extension
+		const [name, ext] = filename.split(".");
+		let finalFilename = filename;
+
+		// If file exists, append random string
+		if (fs.existsSync(`${this.imageStorageDirectory}/${filename}`)) {
+			const randomString = Math.random().toString(36).substring(2, 7);
+			finalFilename = `${name}-${randomString}.${ext}`;
+		}
+
 		fs.writeFileSync(
-			`${this.imageStorageDirectory}/${filename}`,
+			`${this.imageStorageDirectory}/${finalFilename}`,
 			base64image,
 			"base64"
 		);
 
-		const fullUri = `file://${this.imageStorageDirectory}/${filename}`;
+		const fullUri = `file://${this.imageStorageDirectory}/${finalFilename}`;
 
 		return {
 			uri: fullUri,
-			name: filename,
-			mimeType: this.getMimeType(filename),
-			text: `Image ${filename} successfully created at URI ${fullUri}.`,
+			name: finalFilename,
+			mimeType: this.getMimeType(finalFilename),
+			text: `Image ${finalFilename} successfully created at URI ${fullUri}.`,
 		};
 	}
 
