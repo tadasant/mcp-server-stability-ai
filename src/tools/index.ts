@@ -9,3 +9,4 @@ export * from "./listResources.js";
 export * from "./searchAndRecolor.js";
 export * from "./replaceBackgroundAndRelight.js";
 export * from "./controlStyle.js";
+export * from "./controlStructure.js";

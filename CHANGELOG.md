@@ -8,6 +8,11 @@
 - Remove `stability-ai-0-find-image-file-location` Tool and add `stability-ai-0-list-resources` Tool
 - Refactor to avoid using filesystem & Tools directly in favor of Resources abstraction
 - Add Prompts capability
+- Add features:
+  - `stability-ai-control-style`: generate an image in the style of a reference image
+  - `stability-ai-control-structure`: generate an image while maintaining the structure of a reference image
+  - `stability-ai-replace-background-and-relight`: replace the background of an image and relight it
+  - `stability-ai-search-and-recolor`: search for and recolor objects in an image
 
 ## 0.0.3
 

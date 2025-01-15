@@ -109,6 +109,14 @@ interface ControlStyleOptions {
 	outputFormat?: "png" | "jpeg" | "webp";
 }
 
+interface ControlStructureOptions {
+	prompt: string;
+	controlStrength?: number;
+	negativePrompt?: string;
+	seed?: number;
+	outputFormat?: "png" | "jpeg" | "webp";
+}
+
 export class StabilityAiApiClient {
 	private readonly apiKey: string;
 	private readonly baseUrl = "https://api.stability.ai";
@@ -516,6 +524,44 @@ export class StabilityAiApiClient {
 		try {
 			const response = await this.axiosClient.postForm(
 				`${this.baseUrl}/v2beta/stable-image/control/style`,
+				axios.toFormData(payload, new FormData())
+			);
+			const base64Image = response.data.image;
+			return { base64Image };
+		} catch (error) {
+			if (axios.isAxiosError(error) && error.response) {
+				const data = error.response.data;
+				if (error.response.status === 400) {
+					throw new Error(`Invalid parameters: ${data.errors.join(", ")}`);
+				}
+				throw new Error(
+					`API error (${error.response.status}): ${JSON.stringify(data)}`
+				);
+			}
+			throw error;
+		}
+	}
+
+	async controlStructure(
+		imageFilePath: string,
+		options: ControlStructureOptions
+	): Promise<{ base64Image: string }> {
+		const payload = {
+			image: fs.createReadStream(imageFilePath),
+			prompt: options.prompt,
+			output_format: options.outputFormat || "png",
+			...(options.controlStrength !== undefined && {
+				control_strength: options.controlStrength,
+			}),
+			...(options.negativePrompt && {
+				negative_prompt: options.negativePrompt,
+			}),
+			...(options.seed !== undefined && { seed: options.seed }),
+		};
+
+		try {
+			const response = await this.axiosClient.postForm(
+				`${this.baseUrl}/v2beta/stable-image/control/structure`,
 				axios.toFormData(payload, new FormData())
 			);
 			const base64Image = response.data.image;
