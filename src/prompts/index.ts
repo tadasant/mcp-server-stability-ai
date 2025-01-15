@@ -1,4 +1,5 @@
 import { controlSketchToolDefinition } from "../tools/controlSketch.js";
+import { controlStyleToolDefinition } from "../tools/controlStyle.js";
 import { generateImageToolDefinition } from "../tools/generateImage.js";
 import { listResourcesToolDefinition } from "../tools/listResources.js";
 import { searchAndReplaceToolDefinition } from "../tools/searchAndReplace.js";
@@ -28,6 +29,11 @@ export const prompts = [
 		name: "generate-image-from-sketch",
 		description: "Generate an image from a hand-drawn sketch",
 		template: `The user should provide an image name or location of a sketch image that matches a resource from ${listResourcesToolDefinition.name} (if the results from this tool are not in recent conversation history, run it again so you have an up-to-date list of resources). Try using ${controlSketchToolDefinition.name} to generate an image from the indicated sketch. Make sure to ask the user for feedback after the generation.`,
+	},
+	{
+		name: "generate-image-in-the-style-of",
+		description: "Generate an image in the style of an existing image",
+		template: `The user should provide an image name or location that matches a resource from ${listResourcesToolDefinition.name} (if the results from this tool are not in recent conversation history, run it again so you have an up-to-date list of resources). Try using ${controlStyleToolDefinition.name} to generate an image in the style of the indicated image. Make sure to ask the user for feedback after the generation.`,
 	},
 	{
 		name: "upscale-image",
