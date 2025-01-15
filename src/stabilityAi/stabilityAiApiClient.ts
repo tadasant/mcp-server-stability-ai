@@ -67,6 +67,15 @@ interface ControlSketchOptions {
 	outputFormat?: "png" | "jpeg" | "webp";
 }
 
+interface SearchAndRecolorOptions {
+	selectPrompt: string;
+	prompt: string;
+	growMask?: number;
+	negativePrompt?: string;
+	seed?: number;
+	outputFormat?: "png" | "jpeg" | "webp";
+}
+
 export class StabilityAiApiClient {
 	private readonly apiKey: string;
 	private readonly baseUrl = "https://api.stability.ai";
@@ -331,6 +340,43 @@ export class StabilityAiApiClient {
 		try {
 			const response = await this.axiosClient.postForm(
 				`${this.baseUrl}/v2beta/stable-image/control/sketch`,
+				axios.toFormData(payload, new FormData())
+			);
+			const base64Image = response.data.image;
+			return { base64Image };
+		} catch (error) {
+			if (axios.isAxiosError(error) && error.response) {
+				const data = error.response.data;
+				if (error.response.status === 400) {
+					throw new Error(`Invalid parameters: ${data.errors.join(", ")}`);
+				}
+				throw new Error(
+					`API error (${error.response.status}): ${JSON.stringify(data)}`
+				);
+			}
+			throw error;
+		}
+	}
+
+	async searchAndRecolor(
+		imageFilePath: string,
+		options: SearchAndRecolorOptions
+	): Promise<{ base64Image: string }> {
+		const payload = {
+			image: fs.createReadStream(imageFilePath),
+			prompt: options.prompt,
+			select_prompt: options.selectPrompt,
+			output_format: options.outputFormat || "png",
+			...(options.growMask !== undefined && { grow_mask: options.growMask }),
+			...(options.negativePrompt && {
+				negative_prompt: options.negativePrompt,
+			}),
+			...(options.seed !== undefined && { seed: options.seed }),
+		};
+
+		try {
+			const response = await this.axiosClient.postForm(
+				`${this.baseUrl}/v2beta/stable-image/edit/search-and-recolor`,
 				axios.toFormData(payload, new FormData())
 			);
 			const base64Image = response.data.image;

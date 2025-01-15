@@ -6,3 +6,4 @@ export * from "./upscaleFast.js";
 export * from "./upscaleCreative.js";
 export * from "./controlSketch.js";
 export * from "./listResources.js";
+export * from "./searchAndRecolor.js";

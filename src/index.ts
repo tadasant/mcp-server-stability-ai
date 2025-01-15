@@ -36,6 +36,9 @@ import {
 	controlSketchToolDefinition,
 	listResources,
 	listResourcesToolDefinition,
+	searchAndRecolor,
+	SearchAndRecolorArgs,
+	searchAndRecolorToolDefinition,
 } from "./tools/index.js";
 import { ResourceClient } from "./resources/resourceClient.js";
 import { prompts, injectPromptTemplate } from "./prompts/index.js";
@@ -146,6 +149,8 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 				return controlSketch(args as ControlSketchArgs);
 			case listResourcesToolDefinition.name:
 				return listResources();
+			case searchAndRecolorToolDefinition.name:
+				return searchAndRecolor(args as SearchAndRecolorArgs);
 			default:
 				throw new Error(`Unknown tool: ${name}`);
 		}
@@ -173,6 +178,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 			upscaleCreativeToolDefinition,
 			controlSketchToolDefinition,
 			listResourcesToolDefinition,
+			searchAndRecolorToolDefinition,
 		],
 	};
 });
