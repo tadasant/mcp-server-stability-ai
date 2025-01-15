@@ -7,6 +7,7 @@
 - Make client come up with meaningful image names for output images
 - Remove `stability-ai-0-find-image-file-location` Tool and add `stability-ai-0-list-resources` Tool
 - Refactor to avoid using filesystem & Tools directly in favor of Resources abstraction
+- Add Prompts capability
 
 ## 0.0.3
 
