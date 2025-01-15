@@ -4,6 +4,8 @@ import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import {
 	CallToolRequestSchema,
+	GetPromptRequestSchema,
+	ListPromptsRequestSchema,
 	ListResourcesRequestSchema,
 	ListToolsRequestSchema,
 	ReadResourceRequestSchema,
@@ -36,6 +38,7 @@ import {
 	listResourcesToolDefinition,
 } from "./tools/index.js";
 import { ResourceClient } from "./resources/resourceClient.js";
+import { prompts, injectPromptTemplate } from "./prompts/index.js";
 
 dotenv.config();
 
@@ -64,9 +67,41 @@ const server = new Server(
 		capabilities: {
 			tools: {},
 			resources: {},
+			prompts: {},
 		},
 	}
 );
+
+server.setRequestHandler(ListPromptsRequestSchema, async () => {
+	return {
+		prompts: prompts.map((p) => ({
+			name: p.name,
+			description: p.description,
+		})),
+	};
+});
+
+server.setRequestHandler(GetPromptRequestSchema, async (request) => {
+	const { name, arguments: args } = request.params;
+
+	const prompt = prompts.find((p) => p.name === name);
+	if (!prompt) {
+		throw new Error(`Prompt not found: ${name}`);
+	}
+
+	const result = injectPromptTemplate(prompt.template, args);
+	return {
+		messages: [
+			{
+				role: "user",
+				content: {
+					type: "text",
+					text: result,
+				},
+			},
+		],
+	};
+});
 
 server.setRequestHandler(ListResourcesRequestSchema, async () => {
 	const resourceClient = new ResourceClient(
