@@ -76,6 +76,21 @@ interface SearchAndRecolorOptions {
 	outputFormat?: "png" | "jpeg" | "webp";
 }
 
+interface ReplaceBackgroundAndRelightOptions {
+	backgroundPrompt?: string;
+	backgroundReference?: string;
+	foregroundPrompt?: string;
+	negativePrompt?: string;
+	preserveOriginalSubject?: number;
+	originalBackgroundDepth?: number;
+	keepOriginalBackground?: boolean;
+	lightSourceDirection?: "above" | "below" | "left" | "right";
+	lightReference?: string;
+	lightSourceStrength?: number;
+	seed?: number;
+	outputFormat?: "png" | "jpeg" | "webp";
+}
+
 export class StabilityAiApiClient {
 	private readonly apiKey: string;
 	private readonly baseUrl = "https://api.stability.ai";
@@ -381,6 +396,71 @@ export class StabilityAiApiClient {
 			);
 			const base64Image = response.data.image;
 			return { base64Image };
+		} catch (error) {
+			if (axios.isAxiosError(error) && error.response) {
+				const data = error.response.data;
+				if (error.response.status === 400) {
+					throw new Error(`Invalid parameters: ${data.errors.join(", ")}`);
+				}
+				throw new Error(
+					`API error (${error.response.status}): ${JSON.stringify(data)}`
+				);
+			}
+			throw error;
+		}
+	}
+
+	async replaceBackgroundAndRelight(
+		imageFilePath: string,
+		options: ReplaceBackgroundAndRelightOptions
+	): Promise<{ base64Image: string }> {
+		const payload = {
+			subject_image: fs.createReadStream(imageFilePath),
+			output_format: options.outputFormat || "png",
+			...(options.backgroundPrompt && {
+				background_prompt: options.backgroundPrompt,
+			}),
+			...(options.backgroundReference && {
+				background_reference: fs.createReadStream(options.backgroundReference),
+			}),
+			...(options.foregroundPrompt && {
+				foreground_prompt: options.foregroundPrompt,
+			}),
+			...(options.negativePrompt && {
+				negative_prompt: options.negativePrompt,
+			}),
+			...(options.preserveOriginalSubject !== undefined && {
+				preserve_original_subject: options.preserveOriginalSubject,
+			}),
+			...(options.originalBackgroundDepth !== undefined && {
+				original_background_depth: options.originalBackgroundDepth,
+			}),
+			...(options.keepOriginalBackground !== undefined && {
+				keep_original_background: options.keepOriginalBackground,
+			}),
+			...(options.lightSourceDirection && {
+				light_source_direction: options.lightSourceDirection,
+			}),
+			...(options.lightReference && {
+				light_reference: fs.createReadStream(options.lightReference),
+			}),
+			...(options.lightSourceStrength !== undefined && {
+				light_source_strength: options.lightSourceStrength,
+			}),
+			...(options.seed !== undefined && { seed: options.seed }),
+		};
+
+		try {
+			const response = await this.axiosClient.postForm(
+				`${this.baseUrl}/v2beta/stable-image/edit/replace-background-and-relight`,
+				axios.toFormData(payload, new FormData())
+			);
+
+			// Get the generation ID from the response
+			const generationId = response.data.id;
+
+			// Poll for the result
+			return await this.fetchGenerationResult(generationId);
 		} catch (error) {
 			if (axios.isAxiosError(error) && error.response) {
 				const data = error.response.data;

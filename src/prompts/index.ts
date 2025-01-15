@@ -43,6 +43,7 @@ export const prompts = [
     - "search and replace": the user must provide some object in the image to "search for" and some object in the image to "replace with"
     - "search and recolor": the user must provide some object(s) in the image to "search for" and some color(s) to "recolor with"
     - "remove background": self explanatory; we attempt to make the background of the image transparent
+    - "replace background and relight": the user must provide context for what kind of new background they want either as text or as a reference image (which we'll need to grab the URI for)
     
     Examples of invalid changes we cannot perform at this time:
     - Add {object} (without removing anything)
