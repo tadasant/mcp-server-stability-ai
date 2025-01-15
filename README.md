@@ -55,20 +55,27 @@ This project is NOT officially affiliated with Stability AI.
 
 This server is built and tested on macOS with Claude Desktop. It should work with other MCP clients as well.
 
-| Tool Name            | Description                                                                                        | Estimated Stability API Cost |
-| -------------------- | -------------------------------------------------------------------------------------------------- | ---------------------------- |
-| `generate-image`     | Generate a high quality image of anything based on a provided prompt & other optional parameters.  | $0.03                        |
-| `remove-background`  | Remove the background from an image.                                                               | $0.02                        |
-| `outpaint`           | Extend an image in any direction while maintaining visual consistency.                             | $0.04                        |
-| `search-and-replace` | Replace objects or elements in an image by describing what to replace and what to replace it with. | $0.04                        |
-| `upscale-fast`       | Enhance image resolution by 4x.                                                                    | $0.01                        |
-| `upscale-creative`   | Enhance image resolution up to 4K.                                                                 | $0.25                        |
-| `control-sketch`     | Translate hand-drawn sketch to production-grade image.                                             | $0.03                        |
+| Tool Name                        | Description                                                                                        | Estimated Stability API Cost |
+| -------------------------------- | -------------------------------------------------------------------------------------------------- | ---------------------------- |
+| `generate-image`                 | Generate a high quality image of anything based on a provided prompt & other optional parameters.  | $0.03                        |
+| `remove-background`              | Remove the background from an image.                                                               | $0.02                        |
+| `outpaint`                       | Extend an image in any direction while maintaining visual consistency.                             | $0.04                        |
+| `search-and-replace`             | Replace objects or elements in an image by describing what to replace and what to replace it with. | $0.04                        |
+| `upscale-fast`                   | Enhance image resolution by 4x.                                                                    | $0.01                        |
+| `upscale-creative`               | Enhance image resolution up to 4K.                                                                 | $0.25                        |
+| `control-sketch`                 | Translate hand-drawn sketch to production-grade image.                                             | $0.03                        |
+| `control-style`                  | Generate an image in the style of a reference image.                                               | $0.04                        |
+| `control-structure`              | Generate an image while maintaining the structure of a reference image.                            | $0.03                        |
+| `replace-background-and-relight` | Replace the background of an image and relight it.                                                 | $0.08                        |
+| `search-and-recolor`             | Search for and recolor objects in an image.                                                        | $0.05                        |
 
 # Usage Tips
 
 - All processed images are automatically saved to `IMAGE_STORAGE_DIRECTORY`, opened for preview, and made available as resources
 - Do _not_ try to copy/paste or upload image files to Claude. Claude does not store images anywhere, so we cannot work with those with the MCP server. They have to be "uploaded" (saved to) the `IMAGE_STORAGE_DIRECTORY` and then they will show up as resources available in the chat.
+- You can use Prompts that come preloaded instead of writing your own verbiage:
+
+<img src="https://github.com/tadasant/mcp-server-stability-ai/blob/main/images/prompts.png" width="500" alt="Prompts">
 
 # Examples
 
@@ -109,6 +116,22 @@ And then, if the output still isn't good enough, you can upscale it again:
 
 1. `Transform sketch.png into a colored illustration for a children's book`
 2. `Convert wireframe.jpg into a detailed 3D render for a modern architectural visualization`
+
+## Control Style
+
+1. `Generate an image in the style of the reference image`
+
+## Control Structure
+
+1. `Generate an image while maintaining the structure of the reference image`
+
+## Replace Background and Relight
+
+1. `Replace the background of the image I just generated with a sunset over mountains`
+
+## Search and Recolor
+
+1. `In my last image, make the red car be blue instead`
 
 # Setup
 
@@ -196,11 +219,9 @@ npx @smithery/cli install mcp-server-stability-ai --client claude
 
 These are coming soon; but PR's are welcome! See [CONTRIBUTING.md](CONTRIBUTING.md).
 
-- `search-and-recolor` - Identify an object in an image based on a prompt, then change its color.
 - `inpaint` - A more precise version of `search-and-x` functionalities, requires mananging a mask to define to area to replace.
-- `replace-background-and-relight` - Replace background of an image, maintaining surrounding lighting effects.
-- `control-style` - Use one image to guide generation of another image.
-- `control-structure` - Maintain the setting of an image to another (e.g. for creating multiple scenes with the same backdrop).
+- Base image manipulation (crop, rotate, resize, etc.): likely as its own MCP server
+- MCP client custom-made for image manipulation
 
 # Contributing
 
