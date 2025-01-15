@@ -45,6 +45,9 @@ import {
 	controlStyle,
 	ControlStyleArgs,
 	controlStyleToolDefinition,
+	controlStructure,
+	ControlStructureArgs,
+	controlStructureToolDefinition,
 } from "./tools/index.js";
 import { ResourceClient } from "./resources/resourceClient.js";
 import { prompts, injectPromptTemplate } from "./prompts/index.js";
@@ -163,6 +166,8 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 				);
 			case controlStyleToolDefinition.name:
 				return controlStyle(args as ControlStyleArgs);
+			case controlStructureToolDefinition.name:
+				return controlStructure(args as ControlStructureArgs);
 			default:
 				throw new Error(`Unknown tool: ${name}`);
 		}
@@ -193,6 +198,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 			searchAndRecolorToolDefinition,
 			replaceBackgroundAndRelightToolDefinition,
 			controlStyleToolDefinition,
+			controlStructureToolDefinition,
 		],
 	};
 });

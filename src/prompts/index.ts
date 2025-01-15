@@ -5,6 +5,7 @@ import { listResourcesToolDefinition } from "../tools/listResources.js";
 import { searchAndReplaceToolDefinition } from "../tools/searchAndReplace.js";
 import { upscaleCreativeToolDefinition } from "../tools/upscaleCreative.js";
 import { upscaleFastToolDefinition } from "../tools/upscaleFast.js";
+import { controlStructureToolDefinition } from "../tools/controlStructure.js";
 
 // Expect template to have {{variable}} entries and replace them with args[variable]
 export const injectPromptTemplate = (
@@ -34,6 +35,12 @@ export const prompts = [
 		name: "generate-image-in-the-style-of",
 		description: "Generate an image in the style of an existing image",
 		template: `The user should provide an image name or location that matches a resource from ${listResourcesToolDefinition.name} (if the results from this tool are not in recent conversation history, run it again so you have an up-to-date list of resources). Try using ${controlStyleToolDefinition.name} to generate an image in the style of the indicated image. Make sure to ask the user for feedback after the generation.`,
+	},
+	{
+		name: "generate-image-using-structure",
+		description:
+			"Generate an image while maintaining the structure (i.e. background, context) of a reference image",
+		template: `The user should provide an image name or location that matches a resource from ${listResourcesToolDefinition.name} (if the results from this tool are not in recent conversation history, run it again so you have an up-to-date list of resources). Try using ${controlStructureToolDefinition.name} to generate an image that maintains the structure of the indicated image. Make sure to ask the user for feedback after the generation.`,
 	},
 	{
 		name: "upscale-image",
