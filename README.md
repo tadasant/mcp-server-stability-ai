@@ -221,6 +221,7 @@ These are coming soon; but PR's are welcome! See [CONTRIBUTING.md](CONTRIBUTING.
 
 - `inpaint` - A more precise version of `search-and-x` functionalities, requires mananging a mask to define to area to replace.
 - Base image manipulation (crop, rotate, resize, etc.): likely as its own MCP server
+- Ability to inpaint one image into another image. Doesn't seem possible with Stability API; will probably want another MCP server hitting a different API to accomplish this.
 - MCP client custom-made for image manipulation
 
 # Contributing
