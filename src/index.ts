@@ -42,6 +42,9 @@ import {
 	replaceBackgroundAndRelight,
 	ReplaceBackgroundAndRelightArgs,
 	replaceBackgroundAndRelightToolDefinition,
+	controlStyle,
+	ControlStyleArgs,
+	controlStyleToolDefinition,
 } from "./tools/index.js";
 import { ResourceClient } from "./resources/resourceClient.js";
 import { prompts, injectPromptTemplate } from "./prompts/index.js";
@@ -158,6 +161,8 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 				return replaceBackgroundAndRelight(
 					args as ReplaceBackgroundAndRelightArgs
 				);
+			case controlStyleToolDefinition.name:
+				return controlStyle(args as ControlStyleArgs);
 			default:
 				throw new Error(`Unknown tool: ${name}`);
 		}
@@ -187,6 +192,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 			listResourcesToolDefinition,
 			searchAndRecolorToolDefinition,
 			replaceBackgroundAndRelightToolDefinition,
+			controlStyleToolDefinition,
 		],
 	};
 });

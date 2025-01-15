@@ -91,6 +91,24 @@ interface ReplaceBackgroundAndRelightOptions {
 	outputFormat?: "png" | "jpeg" | "webp";
 }
 
+interface ControlStyleOptions {
+	prompt: string;
+	negativePrompt?: string;
+	aspectRatio?:
+		| "16:9"
+		| "1:1"
+		| "21:9"
+		| "2:3"
+		| "3:2"
+		| "4:5"
+		| "5:4"
+		| "9:16"
+		| "9:21";
+	fidelity?: number;
+	seed?: number;
+	outputFormat?: "png" | "jpeg" | "webp";
+}
+
 export class StabilityAiApiClient {
 	private readonly apiKey: string;
 	private readonly baseUrl = "https://api.stability.ai";
@@ -461,6 +479,47 @@ export class StabilityAiApiClient {
 
 			// Poll for the result
 			return await this.fetchGenerationResult(generationId);
+		} catch (error) {
+			if (axios.isAxiosError(error) && error.response) {
+				const data = error.response.data;
+				if (error.response.status === 400) {
+					throw new Error(`Invalid parameters: ${data.errors.join(", ")}`);
+				}
+				throw new Error(
+					`API error (${error.response.status}): ${JSON.stringify(data)}`
+				);
+			}
+			throw error;
+		}
+	}
+
+	async controlStyle(
+		imageFilePath: string,
+		options: ControlStyleOptions
+	): Promise<{ base64Image: string }> {
+		const payload = {
+			image: fs.createReadStream(imageFilePath),
+			prompt: options.prompt,
+			output_format: options.outputFormat || "png",
+			...(options.negativePrompt && {
+				negative_prompt: options.negativePrompt,
+			}),
+			...(options.aspectRatio && {
+				aspect_ratio: options.aspectRatio,
+			}),
+			...(options.fidelity !== undefined && {
+				fidelity: options.fidelity,
+			}),
+			...(options.seed !== undefined && { seed: options.seed }),
+		};
+
+		try {
+			const response = await this.axiosClient.postForm(
+				`${this.baseUrl}/v2beta/stable-image/control/style`,
+				axios.toFormData(payload, new FormData())
+			);
+			const base64Image = response.data.image;
+			return { base64Image };
 		} catch (error) {
 			if (axios.isAxiosError(error) && error.response) {
 				const data = error.response.data;
