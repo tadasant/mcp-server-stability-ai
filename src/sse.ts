@@ -3,49 +3,29 @@ import http from "http";
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 
 export async function runSSEServer(server: Server) {
-	// Store the active transport
 	let sseTransport: SSEServerTransport | null = null;
 
 	const httpServer = http.createServer(async (req, res) => {
 		console.log(`${req.method} request to ${req.url}`);
 
-		if (req.url?.startsWith("/sse")) {
-			if (req.method === "GET") {
-				console.log("SSE connection attempt received");
+		if (req.url?.startsWith("/sse") && req.method === "GET") {
+			sseTransport = new SSEServerTransport("/messages", res);
+			await server.connect(sseTransport);
 
-				// Add error handler for the response
-				res.on("error", (error) => {
-					console.error("Response error:", error);
-				});
-
-				// Add close handler
-				res.on("close", () => {
-					sseTransport = null;
-					console.log("SSE connection closed");
-				});
-
-				sseTransport = new SSEServerTransport("/sse", res);
-
-				await server.connect(sseTransport);
-
-				console.log("SSE connection setup complete");
-			} else if (req.method === "POST") {
-				if (!sseTransport) {
-					res.writeHead(400);
-					res.end("No active SSE connection");
-					return;
-				}
-
+			res.on("close", () => {
+				sseTransport = null;
+			});
+		} else if (req.url?.startsWith("/messages") && req.method === "POST") {
+			if (sseTransport) {
 				await sseTransport.handlePostMessage(req, res);
+			} else {
+				res.writeHead(400);
+				res.end("No active SSE connection");
 			}
 		} else {
 			res.writeHead(404);
 			res.end();
 		}
-	});
-
-	httpServer.on("error", (error) => {
-		console.error("Server error:", error);
 	});
 
 	httpServer.listen(3020, () => {
