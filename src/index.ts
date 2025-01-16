@@ -2,7 +2,6 @@
 
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
-import { SSEServerTransport } from "@modelcontextprotocol/sdk/server/sse.js";
 import {
 	CallToolRequestSchema,
 	GetPromptRequestSchema,
@@ -52,7 +51,8 @@ import {
 } from "./tools/index.js";
 import { ResourceClient } from "./resources/resourceClient.js";
 import { prompts, injectPromptTemplate } from "./prompts/index.js";
-import http from "http";
+import { runSSEServer } from "./sse.js";
+import { runStdioServer } from "./stdio.js";
 
 dotenv.config();
 
@@ -211,9 +211,6 @@ function printUsage() {
 	console.error("  --sse    Use SSE transport instead of stdio");
 }
 
-// Store the active transport
-let sseTransport: SSEServerTransport | null = null;
-
 // Start the server
 async function main() {
 	const args = process.argv.slice(2);
@@ -226,71 +223,9 @@ async function main() {
 	const useSSE = args.includes("--sse");
 
 	if (useSSE) {
-		const httpServer = http.createServer(async (req, res) => {
-			console.log(`${req.method} request to ${req.url}`);
-
-			// Add CORS headers
-			res.setHeader("Access-Control-Allow-Origin", "*");
-			res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
-			res.setHeader("Access-Control-Allow-Headers", "Content-Type");
-
-			// Handle OPTIONS preflight
-			if (req.method === "OPTIONS") {
-				res.writeHead(204);
-				res.end();
-				return;
-			}
-
-			if (req.url?.startsWith("/sse")) {
-				if (req.method === "GET") {
-					console.log("SSE connection attempt received");
-
-					// Add error handler for the response
-					res.on("error", (error) => {
-						console.error("Response error:", error);
-					});
-
-					// Add close handler
-					res.on("close", () => {
-						sseTransport = null;
-						console.log("SSE connection closed");
-					});
-
-					sseTransport = new SSEServerTransport("/sse", res);
-
-					// Connect the server (this will call start() internally)
-					await server.connect(sseTransport);
-
-					console.log("SSE connection setup complete");
-				} else if (req.method === "POST") {
-					if (!sseTransport) {
-						res.writeHead(400);
-						res.end("No active SSE connection");
-						return;
-					}
-					// Let the transport handle the POST message directly
-					await sseTransport.handlePostMessage(req, res);
-				}
-			} else {
-				res.writeHead(404);
-				res.end();
-			}
-		});
-
-		// Add error handler for the server
-		httpServer.on("error", (error) => {
-			console.error("Server error:", error);
-		});
-
-		httpServer.listen(3020, () => {
-			console.error(
-				"stability-ai MCP Server running on SSE at http://localhost:3020"
-			);
-		});
+		await runSSEServer(server);
 	} else {
-		const transport = new StdioServerTransport();
-		await server.connect(transport);
-		console.error("stability-ai MCP Server running on stdio");
+		await runStdioServer(server);
 	}
 }
 
