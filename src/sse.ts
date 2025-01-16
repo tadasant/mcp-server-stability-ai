@@ -14,19 +14,8 @@ export async function runSSEServer(server: Server) {
 	app.post("/messages", (req, res) => {
 		if (sseTransport) {
 			sseTransport.handlePostMessage(req, res);
-		} else {
-			res.status(400).send("No active SSE connection");
 		}
 	});
 
-	// Handle 404s for all other routes
-	app.use((req, res) => {
-		res.status(404).end();
-	});
-
-	app.listen(3020, () => {
-		console.error(
-			"stability-ai MCP Server running on SSE at http://localhost:3020"
-		);
-	});
+	app.listen(3020);
 }
