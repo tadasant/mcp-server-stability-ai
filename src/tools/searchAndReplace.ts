@@ -61,8 +61,11 @@ export async function searchAndReplace(
 	const filename = `${validatedArgs.outputImageFileName}.png`;
 
 	const resource = await resourceClient.createResource(filename, imageAsBase64);
-	const file_location = resource.uri.replace("file://", "");
-	open(file_location);
+
+	if (resource.uri.includes("file://")) {
+		const file_location = resource.uri.replace("file://", "");
+		open(file_location);
+	}
 
 	return {
 		content: [

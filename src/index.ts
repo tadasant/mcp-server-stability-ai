@@ -232,7 +232,6 @@ function printUsage() {
 	console.error("  --sse    Use SSE transport instead of stdio");
 }
 
-// Start the server
 async function main() {
 	const args = process.argv.slice(2);
 

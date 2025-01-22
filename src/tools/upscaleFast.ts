@@ -55,8 +55,11 @@ export async function upscaleFast(
 			filename,
 			imageAsBase64
 		);
-		const file_location = resource.uri.replace("file://", "");
-		open(file_location);
+
+		if (resource.uri.includes("file://")) {
+			const file_location = resource.uri.replace("file://", "");
+			open(file_location);
+		}
 
 		return {
 			content: [
