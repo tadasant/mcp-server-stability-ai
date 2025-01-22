@@ -22,14 +22,20 @@ export class GcsResourceClient extends ResourceClient {
 
 	async listResources(context?: ResourceContext): Promise<Resource[]> {
 		const files = await this.gcsClient.listFiles(this.getPrefix(context));
-		return files.map((file) => ({
-			uri: `gcs://${file.name}`,
-			name: file.name,
-			mimeType: this.getMimeType(file.name),
-		}));
+		return files.map((file) => {
+			const nameWithoutPrefix = file.name.replace(this.getPrefix(context), "");
+			return {
+				uri: `gcs://${nameWithoutPrefix}`,
+				name: nameWithoutPrefix,
+				mimeType: this.getMimeType(nameWithoutPrefix),
+			};
+		});
 	}
 
-	async readResource(uri: string, context?: ResourceContext): Promise<Resource> {
+	async readResource(
+		uri: string,
+		context?: ResourceContext
+	): Promise<Resource> {
 		try {
 			const filename = uri.replace("gcs://", "");
 			const tempFilePath = path.join(this.tempDir, filename);
@@ -58,7 +64,11 @@ export class GcsResourceClient extends ResourceClient {
 		}
 	}
 
-	async createResource(uri: string, base64image: string, context?: ResourceContext): Promise<Resource> {
+	async createResource(
+		uri: string,
+		base64image: string,
+		context?: ResourceContext
+	): Promise<Resource> {
 		const filename = uri.replace("gcs://", "");
 		if (!filename) {
 			throw new Error("Invalid file path");
@@ -91,14 +101,20 @@ export class GcsResourceClient extends ResourceClient {
 		};
 	}
 
-	async resourceToFile(uri: string, context?: ResourceContext): Promise<string> {
+	async resourceToFile(
+		uri: string,
+		context?: ResourceContext
+	): Promise<string> {
 		const filename = uri.replace("gcs://", "");
 		if (!filename) {
 			throw new Error("Invalid file path");
 		}
 
 		const tempFilePath = path.join(this.tempDir, filename);
-		await this.gcsClient.downloadFile(this.getPrefix(context) + filename, tempFilePath);
+		await this.gcsClient.downloadFile(
+			this.getPrefix(context) + filename,
+			tempFilePath
+		);
 
 		return tempFilePath;
 	}
