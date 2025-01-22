@@ -1,7 +1,8 @@
 import { StabilityAiApiClient } from "../stabilityAi/stabilityAiApiClient.js";
-import { ResourceClient } from "../resources/resourceClient.js";
+import { ResourceContext } from "../resources/resourceClient.js";
 import open from "open";
 import { z } from "zod";
+import { getResourceClient } from "../resources/resourceClientFactory.js";
 
 const RemoveBackgroundArgsSchema = z.object({
 	imageFileUri: z.string(),
@@ -30,11 +31,12 @@ export const removeBackgroundToolDefinition = {
 	},
 };
 
-export const removeBackground = async (args: RemoveBackgroundArgs) => {
+export const removeBackground = async (
+	args: RemoveBackgroundArgs,
+	context: ResourceContext
+) => {
 	const client = new StabilityAiApiClient(process.env.STABILITY_AI_API_KEY);
-	const resourceClient = new ResourceClient(
-		process.env.IMAGE_STORAGE_DIRECTORY
-	);
+	const resourceClient = getResourceClient();
 
 	const imageFilePath = await resourceClient.resourceToFile(args.imageFileUri);
 	const response = await client.removeBackground(imageFilePath);
@@ -42,9 +44,16 @@ export const removeBackground = async (args: RemoveBackgroundArgs) => {
 	const imageAsBase64 = response.base64Image;
 	const filename = `${args.outputImageFileName}.png`;
 
-	const resource = await resourceClient.createResource(filename, imageAsBase64);
-	const file_location = resource.uri.replace("file://", "");
-	open(file_location);
+	const resource = await resourceClient.createResource(
+		filename,
+		imageAsBase64,
+		context
+	);
+
+	if (resource.uri.includes("file://")) {
+		const file_location = resource.uri.replace("file://", "");
+		open(file_location);
+	}
 
 	return {
 		content: [

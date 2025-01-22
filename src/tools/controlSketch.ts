@@ -1,7 +1,8 @@
 import { StabilityAiApiClient } from "../stabilityAi/stabilityAiApiClient.js";
 import open from "open";
 import { z } from "zod";
-import { ResourceClient } from "../resources/resourceClient.js";
+import { ResourceContext } from "../resources/resourceClient.js";
+import { getResourceClient } from "../resources/resourceClientFactory.js";
 
 const ControlSketchArgsSchema = z.object({
 	imageFileUri: z.string(),
@@ -49,16 +50,18 @@ export const controlSketchToolDefinition = {
 	},
 };
 
-export async function controlSketch(args: ControlSketchArgs) {
+export async function controlSketch(
+	args: ControlSketchArgs,
+	context: ResourceContext
+) {
 	const validatedArgs = ControlSketchArgsSchema.parse(args);
 
 	const client = new StabilityAiApiClient(process.env.STABILITY_AI_API_KEY!);
 
-	const resourceClient = new ResourceClient(
-		process.env.IMAGE_STORAGE_DIRECTORY
-	);
+	const resourceClient = getResourceClient();
 	const imageFilePath = await resourceClient.resourceToFile(
-		validatedArgs.imageFileUri
+		validatedArgs.imageFileUri,
+		context
 	);
 
 	try {
@@ -76,8 +79,10 @@ export async function controlSketch(args: ControlSketchArgs) {
 			imageAsBase64
 		);
 
-		const file_location = resource.uri.replace("file://", "");
-		open(file_location);
+		if (resource.uri.includes("file://")) {
+			const file_location = resource.uri.replace("file://", "");
+			open(file_location);
+		}
 
 		return {
 			content: [

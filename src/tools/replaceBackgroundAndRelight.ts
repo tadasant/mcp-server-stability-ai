@@ -1,7 +1,8 @@
 import { StabilityAiApiClient } from "../stabilityAi/stabilityAiApiClient.js";
-import { ResourceClient } from "../resources/resourceClient.js";
+import { ResourceContext } from "../resources/resourceClient.js";
 import open from "open";
 import { z } from "zod";
+import { getResourceClient } from "../resources/resourceClientFactory.js";
 
 const ReplaceBackgroundAndRelightArgsSchema = z
 	.object({
@@ -93,15 +94,15 @@ export const replaceBackgroundAndRelightToolDefinition = {
 };
 
 export const replaceBackgroundAndRelight = async (
-	args: ReplaceBackgroundAndRelightArgs
+	args: ReplaceBackgroundAndRelightArgs,
+	context: ResourceContext
 ) => {
 	const validatedArgs = ReplaceBackgroundAndRelightArgsSchema.parse(args);
 
-	const resourceClient = new ResourceClient(
-		process.env.IMAGE_STORAGE_DIRECTORY
-	);
+	const resourceClient = getResourceClient();
 	const imageFilePath = await resourceClient.resourceToFile(
-		validatedArgs.imageFileUri
+		validatedArgs.imageFileUri,
+		context
 	);
 
 	const client = new StabilityAiApiClient(process.env.STABILITY_AI_API_KEY!);
@@ -138,8 +139,11 @@ export const replaceBackgroundAndRelight = async (
 	const filename = `${validatedArgs.outputImageFileName}.png`;
 
 	const resource = await resourceClient.createResource(filename, imageAsBase64);
-	const file_location = resource.uri.replace("file://", "");
-	open(file_location);
+
+	if (resource.uri.includes("file://")) {
+		const file_location = resource.uri.replace("file://", "");
+		open(file_location);
+	}
 
 	return {
 		content: [

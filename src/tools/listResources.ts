@@ -1,4 +1,5 @@
-import { ResourceClient } from "../resources/resourceClient.js";
+import { ResourceContext } from "../resources/resourceClient.js";
+import { getResourceClient } from "../resources/resourceClientFactory.js";
 
 export const listResourcesToolDefinition = {
 	name: "stability-ai-0-list-resources",
@@ -12,11 +13,9 @@ export const listResourcesToolDefinition = {
 } as const;
 
 // List all available Resources via tool. Useful for clients that have limited capability for referencing resources within tool calls.
-export const listResources = async () => {
-	const resourceClient = new ResourceClient(
-		process.env.IMAGE_STORAGE_DIRECTORY
-	);
-	const resources = await resourceClient.listResources();
+export const listResources = async (context: ResourceContext) => {
+	const resourceClient = getResourceClient();
+	const resources = await resourceClient.listResources(context);
 
 	return {
 		content: resources.map((r) => ({
