@@ -249,6 +249,7 @@ async function main() {
 					privateKey: process.env.GCS_PRIVATE_KEY,
 					clientEmail: process.env.GCS_CLIENT_EMAIL,
 					projectId: process.env.GCS_PROJECT_ID,
+					bucketName: process.env.GCS_BUCKET_NAME,
 				},
 			}
 		: {

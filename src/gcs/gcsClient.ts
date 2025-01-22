@@ -8,6 +8,7 @@ interface GcsClientConfig {
 	privateKey?: string;
 	clientEmail?: string;
 	projectId?: string;
+	bucketName?: string;
 }
 
 interface UploadOptions {
@@ -17,9 +18,10 @@ interface UploadOptions {
 
 export class GcsClient {
 	private readonly storage: Storage;
-	private readonly bucketName = "stability-ai-mcp-server";
+	bucketName: string;
 
 	constructor(config?: GcsClientConfig) {
+		this.bucketName = config?.bucketName as string;
 		const credentials =
 			config?.privateKey && config?.clientEmail
 				? {
@@ -63,6 +65,7 @@ export class GcsClient {
 			const [file] = await bucket.upload(filePath, {
 				destination,
 				contentType: options?.contentType,
+				public: true,
 			});
 
 			return file;

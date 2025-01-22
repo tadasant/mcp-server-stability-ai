@@ -144,6 +144,7 @@ And then, if the output still isn't good enough, you can upscale it again:
 | `GCS_PROJECT_ID`          | Google Cloud Project ID for storing images                                                                | N (Y if using SSE) | N/A                                                                                     | `your-project-id`                                                       |
 | `GCS_CLIENT_EMAIL`        | Google Cloud Service Account client email for storing images                                              | N (Y if using SSE) | N/A                                                                                     | `your-service-account@project.iam.gserviceaccount.com`                  |
 | `GCS_PRIVATE_KEY`         | Google Cloud Service Account private key for storing images                                               | N (Y if using SSE) | N/A                                                                                     | `-----BEGIN PRIVATE KEY-----\nYourKeyHere\n-----END PRIVATE KEY-----\n` |
+| `GCS_BUCKET_NAME`         | Google Cloud Storage bucket name for storing images                                                       | N (Y if using SSE) | N/A                                                                                     | `your-bucket-name`                                                      |
 
 ## Claude Desktop
 
@@ -174,6 +175,7 @@ Modify your `claude_desktop_config.json` file to add the following:
     "stability-ai": {
       "command": "npx",
       "args": [
+        "-y",
         "mcp-server-stability-ai"
       ],
       "env": {
@@ -193,6 +195,7 @@ On Windows, this might look more like:
     "stability-ai": {
       "command": "npx",
       "args": [
+        "-y",
         "mcp-server-stability-ai"
       ],
       "env": {
@@ -217,6 +220,20 @@ To install for Claude Desktop automatically via [Smithery](https://smithery.ai/s
 ```bash
 npx @smithery/cli install mcp-server-stability-ai --client claude
 ```
+
+## SSE Mode
+
+This server has the option to run in SSE mode by starting it with the following command:
+
+```bash
+npx mcp-server-stability-ai -y --sse
+```
+
+This mode is useful if you intend to deploy this server for third party usage over HTTP.
+
+You will need to set the `GCS_PROJECT_ID`, `GCS_CLIENT_EMAIL`, `GCS_BUCKET_NAME`, and `GCS_PRIVATE_KEY` environment variables, because the server will store image files in Google Cloud Storage instead of its local filesystem.
+
+Note that the scheme for multitenancy is very naive and insecure: it uses the requestor's IP address to segment the GCS prefixes used to the store the images, and makes all images publicly accessible in order to communicate them back to the MCP client. So in theory, if someone knows your IP address and then name(s) of files you generated, they could access your images by guessing the URL.
 
 ## Roadmap
 

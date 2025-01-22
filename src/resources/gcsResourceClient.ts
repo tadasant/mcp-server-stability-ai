@@ -20,12 +20,24 @@ export class GcsResourceClient extends ResourceClient {
 		return context?.requestorIpAddress + "/";
 	}
 
+	filenameToUri(filename: string, context?: ResourceContext): string {
+		return `https://storage.googleapis.com/${this.gcsClient.bucketName}/${this.getPrefix(context)}${filename}`;
+	}
+
+	uriToFilename(uri: string, context?: ResourceContext): string {
+		return uri.replace(
+			`https://storage.googleapis.com/${this.gcsClient.bucketName}/${this.getPrefix(context)}`,
+			""
+		);
+	}
+
 	async listResources(context?: ResourceContext): Promise<Resource[]> {
 		const files = await this.gcsClient.listFiles(this.getPrefix(context));
 		return files.map((file) => {
+			const uri = this.filenameToUri(file.name, context);
 			const nameWithoutPrefix = file.name.replace(this.getPrefix(context), "");
 			return {
-				uri: `gcs://${nameWithoutPrefix}`,
+				uri,
 				name: nameWithoutPrefix,
 				mimeType: this.getMimeType(nameWithoutPrefix),
 			};
@@ -37,7 +49,7 @@ export class GcsResourceClient extends ResourceClient {
 		context?: ResourceContext
 	): Promise<Resource> {
 		try {
-			const filename = uri.replace("gcs://", "");
+			const filename = this.uriToFilename(uri, context);
 			const tempFilePath = path.join(this.tempDir, filename);
 
 			await this.gcsClient.downloadFile(
@@ -69,7 +81,7 @@ export class GcsResourceClient extends ResourceClient {
 		base64image: string,
 		context?: ResourceContext
 	): Promise<Resource> {
-		const filename = uri.replace("gcs://", "");
+		const filename = this.uriToFilename(uri, context);
 		if (!filename) {
 			throw new Error("Invalid file path");
 		}
@@ -91,7 +103,7 @@ export class GcsResourceClient extends ResourceClient {
 		// Clean up temp file
 		fs.unlinkSync(tempFilePath);
 
-		const fullUri = `gcs://${finalFilename}`;
+		const fullUri = this.filenameToUri(finalFilename, context);
 
 		return {
 			uri: fullUri,
@@ -105,7 +117,7 @@ export class GcsResourceClient extends ResourceClient {
 		uri: string,
 		context?: ResourceContext
 	): Promise<string> {
-		const filename = uri.replace("gcs://", "");
+		const filename = this.uriToFilename(uri, context);
 		if (!filename) {
 			throw new Error("Invalid file path");
 		}

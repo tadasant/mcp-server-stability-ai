@@ -16,6 +16,7 @@ export type ResourceClientConfig =
 				privateKey?: string;
 				clientEmail?: string;
 				projectId?: string;
+				bucketName?: string;
 			};
 	  };
 
