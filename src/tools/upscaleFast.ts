@@ -1,7 +1,8 @@
 import { StabilityAiApiClient } from "../stabilityAi/stabilityAiApiClient.js";
 import open from "open";
 import { z } from "zod";
-import { ResourceClient } from "../resources/resourceClient.js";
+import { ResourceContext } from "../resources/resourceClient.js";
+import { getResourceClient } from "../resources/resourceClientFactory.js";
 
 const UpscaleFastArgsSchema = z.object({
 	imageFileUri: z.string(),
@@ -30,14 +31,16 @@ export const upscaleFastToolDefinition = {
 	},
 };
 
-export async function upscaleFast(args: UpscaleFastArgs) {
+export async function upscaleFast(
+	args: UpscaleFastArgs,
+	context: ResourceContext
+) {
 	const validatedArgs = UpscaleFastArgsSchema.parse(args);
 
-	const resourceClient = new ResourceClient(
-		process.env.IMAGE_STORAGE_DIRECTORY
-	);
+	const resourceClient = getResourceClient();
 	const imageFilePath = await resourceClient.resourceToFile(
-		validatedArgs.imageFileUri
+		validatedArgs.imageFileUri,
+		context
 	);
 
 	const client = new StabilityAiApiClient(process.env.STABILITY_AI_API_KEY!);
@@ -52,8 +55,11 @@ export async function upscaleFast(args: UpscaleFastArgs) {
 			filename,
 			imageAsBase64
 		);
-		const file_location = resource.uri.replace("file://", "");
-		open(file_location);
+
+		if (resource.uri.includes("file://")) {
+			const file_location = resource.uri.replace("file://", "");
+			open(file_location);
+		}
 
 		return {
 			content: [

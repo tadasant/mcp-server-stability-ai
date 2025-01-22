@@ -1,7 +1,8 @@
 import { z } from "zod";
 import { StabilityAiApiClient } from "../stabilityAi/stabilityAiApiClient.js";
 import open from "open";
-import { ResourceClient } from "../resources/resourceClient.js";
+import { ResourceContext } from "../resources/resourceClient.js";
+import { getResourceClient } from "../resources/resourceClientFactory.js";
 
 const OutpaintArgsSchema = z.object({
 	imageFileUri: z.string(),
@@ -60,14 +61,13 @@ export const outpaintToolDefinition = {
 	},
 };
 
-export async function outpaint(args: OutpaintArgs) {
+export async function outpaint(args: OutpaintArgs, context: ResourceContext) {
 	const validatedArgs = OutpaintArgsSchema.parse(args);
 
-	const resourceClient = new ResourceClient(
-		process.env.IMAGE_STORAGE_DIRECTORY
-	);
+	const resourceClient = getResourceClient();
 	const imageFilePath = await resourceClient.resourceToFile(
-		validatedArgs.imageFileUri
+		validatedArgs.imageFileUri,
+		context
 	);
 
 	// Ensure at least one direction is specified
@@ -91,8 +91,10 @@ export async function outpaint(args: OutpaintArgs) {
 
 	const resource = await resourceClient.createResource(filename, imageAsBase64);
 
-	const file_location = resource.uri.replace("file://", "");
-	open(file_location);
+	if (resource.uri.includes("file://")) {
+		const file_location = resource.uri.replace("file://", "");
+		open(file_location);
+	}
 
 	return {
 		content: [
