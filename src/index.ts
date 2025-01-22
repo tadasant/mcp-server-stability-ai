@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
-import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import {
 	CallToolRequestSchema,
 	GetPromptRequestSchema,
@@ -49,10 +48,15 @@ import {
 	ControlStructureArgs,
 	controlStructureToolDefinition,
 } from "./tools/index.js";
-import { ResourceClient } from "./resources/resourceClient.js";
+import {
+	initializeResourceClient,
+	ResourceClientConfig,
+	getResourceClient,
+} from "./resources/resourceClientFactory.js";
 import { prompts, injectPromptTemplate } from "./prompts/index.js";
 import { runSSEServer } from "./sse.js";
 import { runStdioServer } from "./stdio.js";
+import { ResourceContext } from "./resources/resourceClient.js";
 
 dotenv.config();
 
@@ -117,11 +121,15 @@ server.setRequestHandler(GetPromptRequestSchema, async (request) => {
 	};
 });
 
-server.setRequestHandler(ListResourcesRequestSchema, async () => {
-	const resourceClient = new ResourceClient(
-		process.env.IMAGE_STORAGE_DIRECTORY
-	);
-	const resources = await resourceClient.listResources();
+server.setRequestHandler(ListResourcesRequestSchema, async (request) => {
+	const meta = request.params?._meta;
+	const ipAddress = meta?.ip as string;
+	const context: ResourceContext = {
+		requestorIpAddress: ipAddress,
+	};
+
+	const resourceClient = getResourceClient();
+	const resources = await resourceClient.listResources(context);
 
 	return {
 		resources,
@@ -129,10 +137,17 @@ server.setRequestHandler(ListResourcesRequestSchema, async () => {
 });
 
 server.setRequestHandler(ReadResourceRequestSchema, async (request) => {
-	const resourceClient = new ResourceClient(
-		process.env.IMAGE_STORAGE_DIRECTORY
+	const { _meta: meta } = request.params;
+	const ipAddress = meta?.ip as string;
+	const context: ResourceContext = {
+		requestorIpAddress: ipAddress,
+	};
+
+	const resourceClient = getResourceClient();
+	const resource = await resourceClient.readResource(
+		request.params.uri,
+		context
 	);
-	const resource = await resourceClient.readResource(request.params.uri);
 
 	return {
 		contents: [resource],
@@ -140,36 +155,42 @@ server.setRequestHandler(ReadResourceRequestSchema, async (request) => {
 });
 
 server.setRequestHandler(CallToolRequestSchema, async (request) => {
-	const { name, arguments: args } = request.params;
+	const { name, arguments: args, _meta: meta } = request.params;
+
+	const ipAddress = meta?.ip as string;
+	const context: ResourceContext = {
+		requestorIpAddress: ipAddress,
+	};
 
 	try {
 		switch (name) {
 			case generateImageToolDefinition.name:
-				return generateImage(args as GenerateImageArgs);
+				return generateImage(args as GenerateImageArgs, context);
 			case removeBackgroundToolDefinition.name:
-				return removeBackground(args as RemoveBackgroundArgs);
+				return removeBackground(args as RemoveBackgroundArgs, context);
 			case outpaintToolDefinition.name:
-				return outpaint(args as OutpaintArgs);
+				return outpaint(args as OutpaintArgs, context);
 			case searchAndReplaceToolDefinition.name:
-				return searchAndReplace(args as SearchAndReplaceArgs);
+				return searchAndReplace(args as SearchAndReplaceArgs, context);
 			case upscaleFastToolDefinition.name:
-				return upscaleFast(args as UpscaleFastArgs);
+				return upscaleFast(args as UpscaleFastArgs, context);
 			case upscaleCreativeToolDefinition.name:
-				return upscaleCreative(args as UpscaleCreativeArgs);
+				return upscaleCreative(args as UpscaleCreativeArgs, context);
 			case controlSketchToolDefinition.name:
-				return controlSketch(args as ControlSketchArgs);
+				return controlSketch(args as ControlSketchArgs, context);
 			case listResourcesToolDefinition.name:
-				return listResources();
+				return listResources(context);
 			case searchAndRecolorToolDefinition.name:
-				return searchAndRecolor(args as SearchAndRecolorArgs);
+				return searchAndRecolor(args as SearchAndRecolorArgs, context);
 			case replaceBackgroundAndRelightToolDefinition.name:
 				return replaceBackgroundAndRelight(
-					args as ReplaceBackgroundAndRelightArgs
+					args as ReplaceBackgroundAndRelightArgs,
+					context
 				);
 			case controlStyleToolDefinition.name:
-				return controlStyle(args as ControlStyleArgs);
+				return controlStyle(args as ControlStyleArgs, context);
 			case controlStructureToolDefinition.name:
-				return controlStructure(args as ControlStructureArgs);
+				return controlStructure(args as ControlStructureArgs, context);
 			default:
 				throw new Error(`Unknown tool: ${name}`);
 		}
@@ -221,6 +242,22 @@ async function main() {
 	}
 
 	const useSSE = args.includes("--sse");
+
+	const resourceClientConfig: ResourceClientConfig = useSSE
+		? {
+				type: "gcs",
+				gcsConfig: {
+					privateKey: process.env.GCS_PRIVATE_KEY,
+					clientEmail: process.env.GCS_CLIENT_EMAIL,
+					projectId: process.env.GCS_PROJECT_ID,
+				},
+			}
+		: {
+				type: "filesystem",
+				imageStorageDirectory: process.env.IMAGE_STORAGE_DIRECTORY!,
+			};
+
+	initializeResourceClient(resourceClientConfig);
 
 	if (useSSE) {
 		await runSSEServer(server);

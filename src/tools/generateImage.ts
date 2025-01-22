@@ -1,7 +1,8 @@
 import { StabilityAiApiClient } from "../stabilityAi/stabilityAiApiClient.js";
 import open from "open";
 import { z } from "zod";
-import { ResourceClient } from "../resources/resourceClient.js";
+import { ResourceContext } from "../resources/resourceClient.js";
+import { getResourceClient } from "../resources/resourceClientFactory.js";
 
 // Constants for shared values
 const ASPECT_RATIOS = [
@@ -96,7 +97,10 @@ export const generateImageToolDefinition = {
 	},
 } as const;
 
-export const generateImage = async (args: GenerateImageArgs) => {
+export const generateImage = async (
+	args: GenerateImageArgs,
+	context: ResourceContext
+) => {
 	const {
 		prompt,
 		aspectRatio,
@@ -115,10 +119,12 @@ export const generateImage = async (args: GenerateImageArgs) => {
 	const imageAsBase64 = response.base64Image;
 	const filename = `${outputImageFileName}.png`;
 
-	const resourceClient = new ResourceClient(
-		process.env.IMAGE_STORAGE_DIRECTORY
+	const resourceClient = getResourceClient();
+	const resource = await resourceClient.createResource(
+		filename,
+		imageAsBase64,
+		context
 	);
-	const resource = await resourceClient.createResource(filename, imageAsBase64);
 
 	const file_location = resource.uri.replace("file://", "");
 	open(file_location);

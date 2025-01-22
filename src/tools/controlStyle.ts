@@ -1,7 +1,8 @@
 import { StabilityAiApiClient } from "../stabilityAi/stabilityAiApiClient.js";
-import { ResourceClient } from "../resources/resourceClient.js";
+import { ResourceContext } from "../resources/resourceClient.js";
 import open from "open";
 import { z } from "zod";
+import { getResourceClient } from "../resources/resourceClientFactory.js";
 
 const ControlStyleArgsSchema = z.object({
 	imageFileUri: z.string(),
@@ -65,14 +66,16 @@ export const controlStyleToolDefinition = {
 	},
 };
 
-export const controlStyle = async (args: ControlStyleArgs) => {
+export const controlStyle = async (
+	args: ControlStyleArgs,
+	context: ResourceContext
+) => {
 	const validatedArgs = ControlStyleArgsSchema.parse(args);
 
-	const resourceClient = new ResourceClient(
-		process.env.IMAGE_STORAGE_DIRECTORY
-	);
+	const resourceClient = getResourceClient();
 	const imageFilePath = await resourceClient.resourceToFile(
-		validatedArgs.imageFileUri
+		validatedArgs.imageFileUri,
+		context
 	);
 
 	const client = new StabilityAiApiClient(process.env.STABILITY_AI_API_KEY!);
