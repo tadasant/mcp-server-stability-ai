@@ -137,10 +137,13 @@ And then, if the output still isn't good enough, you can upscale it again:
 
 ## Cheatsheet
 
-| Environment Variable      | Description                                                                                               | Required | Default Value                                                                           | Example                                      |
-| ------------------------- | --------------------------------------------------------------------------------------------------------- | -------- | --------------------------------------------------------------------------------------- | -------------------------------------------- |
-| `STABILITY_AI_API_KEY`    | Your Stability AI API key. Get one at [platform.stability.ai](https://platform.stability.ai/account/keys) | Y        | N/A                                                                                     | `sk-1234567890`                              |
-| `IMAGE_STORAGE_DIRECTORY` | Directory where generated images will be saved                                                            | N        | `/tmp/tadasant-mcp-server-stability-ai` OR `C:\\Windows\\Temp\\mcp-server-stability-ai` | `/Users/admin/Downloads/stability-ai-images` |
+| Environment Variable      | Description                                                                                               | Required           | Default Value                                                                           | Example                                                                 |
+| ------------------------- | --------------------------------------------------------------------------------------------------------- | ------------------ | --------------------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
+| `STABILITY_AI_API_KEY`    | Your Stability AI API key. Get one at [platform.stability.ai](https://platform.stability.ai/account/keys) | Y                  | N/A                                                                                     | `sk-1234567890`                                                         |
+| `IMAGE_STORAGE_DIRECTORY` | Directory where generated images will be saved                                                            | N                  | `/tmp/tadasant-mcp-server-stability-ai` OR `C:\\Windows\\Temp\\mcp-server-stability-ai` | `/Users/admin/Downloads/stability-ai-images`                            |
+| `GCS_PROJECT_ID`          | Google Cloud Project ID for storing images                                                                | N (Y if using SSE) | N/A                                                                                     | `your-project-id`                                                       |
+| `GCS_CLIENT_EMAIL`        | Google Cloud Service Account client email for storing images                                              | N (Y if using SSE) | N/A                                                                                     | `your-service-account@project.iam.gserviceaccount.com`                  |
+| `GCS_PRIVATE_KEY`         | Google Cloud Service Account private key for storing images                                               | N (Y if using SSE) | N/A                                                                                     | `-----BEGIN PRIVATE KEY-----\nYourKeyHere\n-----END PRIVATE KEY-----\n` |
 
 ## Claude Desktop
 

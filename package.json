@@ -11,6 +11,7 @@
     "build"
   ],
   "dependencies": {
+    "@google-cloud/storage": "^7.15.0",
     "@modelcontextprotocol/sdk": "^1.0.4",
     "axios": "^1.7.9",
     "dotenv": "^16.4.7",
