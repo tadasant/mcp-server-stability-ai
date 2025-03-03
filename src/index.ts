@@ -15,6 +15,9 @@ import {
 	generateImage,
 	GenerateImageArgs,
 	generateImageToolDefinition,
+	generateImageSD35,
+	GenerateImageSD35Args,
+	generateImageSD35ToolDefinition,
 	removeBackground,
 	RemoveBackgroundArgs,
 	removeBackgroundToolDefinition,
@@ -166,6 +169,8 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 		switch (name) {
 			case generateImageToolDefinition.name:
 				return generateImage(args as GenerateImageArgs, context);
+			case generateImageSD35ToolDefinition.name:
+				return generateImageSD35(args as GenerateImageSD35Args, context);
 			case removeBackgroundToolDefinition.name:
 				return removeBackground(args as RemoveBackgroundArgs, context);
 			case outpaintToolDefinition.name:
@@ -211,6 +216,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 	return {
 		tools: [
 			generateImageToolDefinition,
+			generateImageSD35ToolDefinition,
 			removeBackgroundToolDefinition,
 			outpaintToolDefinition,
 			searchAndReplaceToolDefinition,
