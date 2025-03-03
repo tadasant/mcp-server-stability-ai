@@ -58,6 +58,7 @@ This server is built and tested on macOS with Claude Desktop. It should work wit
 | Tool Name                        | Description                                                                                        | Estimated Stability API Cost |
 | -------------------------------- | -------------------------------------------------------------------------------------------------- | ---------------------------- |
 | `generate-image`                 | Generate a high quality image of anything based on a provided prompt & other optional parameters.  | $0.03                        |
+| `generate-image-sd35`            | Generate an image using Stable Diffusion 3.5 models with advanced configuration options.           | $0.04-$0.07                  |
 | `remove-background`              | Remove the background from an image.                                                               | $0.02                        |
 | `outpaint`                       | Extend an image in any direction while maintaining visual consistency.                             | $0.04                        |
 | `search-and-replace`             | Replace objects or elements in an image by describing what to replace and what to replace it with. | $0.04                        |
@@ -84,6 +85,12 @@ This server is built and tested on macOS with Claude Desktop. It should work wit
 1. `Generate an image of a cat`
 2. `Generate a photorealistic image of a cat in a cyberpunk city, neon lights reflecting off its fur, 16:9 aspect ratio`
 3. `Generate a detailed digital art piece of a cat wearing a space suit floating through a colorful nebula, style preset: digital-art, aspect ratio: 21:9`
+
+## Generate an image with SD3.5
+
+1. `Generate an image of a woman with cybernetic wolf ears using the SD3.5 model`
+2. `Generate an image of a futuristic city using the SD3.5 Large Turbo model, with aspect ratio 16:9`
+3. `Generate an image of an astronaut on mars using the SD3.5 Large model, with cfg scale 7.5 and seed 42`
 
 ## Remove background
 
@@ -215,6 +222,9 @@ You will need to set the `GCS_PROJECT_ID`, `GCS_CLIENT_EMAIL`, `GCS_BUCKET_NAME`
 Note that the scheme for multitenancy is very naive and insecure: it uses the requestor's IP address to segment the GCS prefixes used to the store the images, and makes all images publicly accessible in order to communicate them back to the MCP client. So in theory, if someone knows your IP address and then name(s) of files you generated, they could access your images by guessing the URL.
 
 ## Roadmap
+
+Recently completed:
+- ✅ Added support for the latest Stable Diffusion 3.5 models
 
 These are coming soon; but PR's are welcome! See [CONTRIBUTING.md](CONTRIBUTING.md).
 
