@@ -88,9 +88,9 @@ This server is built and tested on macOS with Claude Desktop. It should work wit
 
 ## Generate an image with SD3.5
 
-1. `Generate an image of a woman with cybernetic wolf ears using the SD3.5 model`
+1. `Generate an image of a woman with cybernetic wolf ears using the SD3.5 model, with the "neon-punk" style preset`
 2. `Generate an image of a futuristic city using the SD3.5 Large Turbo model, with aspect ratio 16:9`
-3. `Generate an image of an astronaut on mars using the SD3.5 Large model, with cfg scale 7.5 and seed 42`
+3. `Generate an image of an astronaut on mars using the SD3.5 Large model, with cfg scale 7.5, "analog-film" style preset, and seed 42`
 
 ## Remove background
 
