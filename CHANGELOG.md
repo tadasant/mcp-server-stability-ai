@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.2.0
+
+- Add support for Stable Diffusion 3.5 models with the `stability-ai-generate-image-sd35` tool
+- Support advanced configuration options for SD3.5:
+  - Model selection (SD3.5 Large, Medium, Turbo)
+  - CFG scale parameter
+  - Various output formats and aspect ratios
+  - Negative prompts
+  - Style presets
+  - Random seed control
+
 ## 0.1.0
 
 - Remove base64 encoding approach to saving images to filesystem (wasn't properly functional)
