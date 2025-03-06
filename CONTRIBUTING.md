@@ -84,7 +84,29 @@ npm run build
 Delete any files that shouldn't be published (e.g. `build/test.js`). Then run:
 
 ```
-npm run publish
+npm publish
+```
+
+After publishing, tag the GitHub repository with the version from package.json and add release notes:
+
+```
+# Get the version from package.json
+VERSION=$(node -p "require('./package.json').version")
+
+# Create an annotated tag with a message
+git tag -a v$VERSION -m "Release v$VERSION"
+
+# Push the tag to the remote repository
+git push origin v$VERSION
+
+# Create a GitHub release with more detailed notes
+# You can do this through the GitHub UI:
+# 1. Go to https://github.com/tadasant/mcp-server-stability-ai/releases
+# 2. Click "Draft a new release"
+# 3. Select the tag you just pushed
+# 4. Add a title (e.g., "v1.2.0")
+# 5. Add detailed release notes describing the changes
+# 6. Click "Publish release"
 ```
 
 TODO: Automate these steps.
