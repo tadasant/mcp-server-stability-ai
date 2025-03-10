@@ -1,7 +1,7 @@
 {
   "type": "module",
   "bin": {
-    "mcp-server-stability-ai-srenby-dev": "./build/index.js"
+    "mcp-server-stability-ai": "./build/index.js"
   },
   "scripts": {
     "build": "tsc && node -e \"require('fs').chmodSync('build/index.js', '755')\"",
@@ -20,7 +20,7 @@
     "open": "^10.1.0",
     "zod": "^3.24.1"
   },
-  "name": "mcp-server-stability-ai-srenby-dev",
+  "name": "mcp-server-stability-ai",
   "version": "0.3.0",
   "description": "MCP [Model Context Protocol](https://modelcontextprotocol.io/) Server integrating MCP Clients with [Stability AI](https://stability.ai/) image manipulation functionalities: generate, edit, upscale, and more.",
   "main": "index.js",
