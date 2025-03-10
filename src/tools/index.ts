@@ -1,5 +1,6 @@
 export * from "./generateImage.js";
 export * from "./generateImageSD35.js";
+export * from "./generateImageWithWeights.js";
 export * from "./removeBackground.js";
 export * from "./outpaint.js";
 export * from "./searchAndReplace.js";
