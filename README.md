@@ -142,12 +142,31 @@ And then, if the output still isn't good enough, you can upscale it again:
 
 # Setup
 
+## Metadata Logging
+
+The server can save metadata from image generation requests to help with tracking and troubleshooting.
+
+| Environment Variable     | Description                                         | Required | Default Value |
+| ------------------------ | --------------------------------------------------- | -------- | ------------- |
+| `SAVE_METADATA`          | Save metadata for successful image generations      | N        | `true`        |
+| `SAVE_METADATA_FAILED`   | Save metadata for failed image generations          | N        | `false`       |
+
+When enabled, a `.txt` file with the same name as the generated image will be created in the same directory. This file contains:
+
+- Timestamp of the request
+- All request parameters (prompt, model, style preset, etc.)
+- Response information (success status, generation time)
+
+This file will also be created for failed requests if `SAVE_METADATA_FAILED` is enabled.
+
 ## Cheatsheet
 
 | Environment Variable      | Description                                                                                               | Required           | Default Value                                                                           | Example                                                                 |
 | ------------------------- | --------------------------------------------------------------------------------------------------------- | ------------------ | --------------------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
 | `STABILITY_AI_API_KEY`    | Your Stability AI API key. Get one at [platform.stability.ai](https://platform.stability.ai/account/keys) | Y                  | N/A                                                                                     | `sk-1234567890`                                                         |
-| `IMAGE_STORAGE_DIRECTORY` | Directory where generated images will be saved                                                            | N                  | `/tmp/tadasant-mcp-server-stability-ai` OR `C:\\Windows\\Temp\\mcp-server-stability-ai` | `/Users/admin/Downloads/stability-ai-images`                            |
+| `IMAGE_STORAGE_DIRECTORY` | Directory where generated images will be saved                                                            | N                  | `/tmp/tadasant-mcp-server-stability-ai` OR `C:\\Windows\\Temp\\mcp-server-stability-ai` | `/Users/admin/Downloads/stability-ai-images` (Mac OS/Linux), `C:\\Users\\Admin\\Downloads\\stability-ai-images` (Windows)|
+| `SAVE_METADATA`           | Save metadata for successful image generations                                                            | N                  | `true`                                                                                  | `true` or `false`                                                       |
+| `SAVE_METADATA_FAILED`    | Save metadata for failed image generations                                                                | N                  | `true`                                                                                  | `true` or `false`                                                       |
 | `GCS_PROJECT_ID`          | Google Cloud Project ID for storing images                                                                | N (Y if using SSE) | N/A                                                                                     | `your-project-id`                                                       |
 | `GCS_CLIENT_EMAIL`        | Google Cloud Service Account client email for storing images                                              | N (Y if using SSE) | N/A                                                                                     | `your-service-account@project.iam.gserviceaccount.com`                  |
 | `GCS_PRIVATE_KEY`         | Google Cloud Service Account private key for storing images                                               | N (Y if using SSE) | N/A                                                                                     | `-----BEGIN PRIVATE KEY-----\nYourKeyHere\n-----END PRIVATE KEY-----\n` |
@@ -224,7 +243,9 @@ Note that the scheme for multitenancy is very naive and insecure: it uses the re
 ## Roadmap
 
 Recently completed:
-- ✅ Added support for the latest Stable Diffusion 3.5 models
+- ✅ Added support for Stable Diffusion 3.5 models
+- ✅ Added support for Stable Image Ultra
+- ✅ Added metadata logging for image generation requests
 
 These are coming soon; but PR's are welcome! See [CONTRIBUTING.md](CONTRIBUTING.md).
 
