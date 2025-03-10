@@ -82,6 +82,15 @@ if (!process.env.IMAGE_STORAGE_DIRECTORY) {
 	}
 }
 
+// Set default values for metadata saving
+if (process.env.SAVE_METADATA === undefined) {
+	process.env.SAVE_METADATA = "true";
+}
+
+if (process.env.SAVE_METADATA_FAILED === undefined) {
+	process.env.SAVE_METADATA_FAILED = "true";
+}
+
 if (!process.env.STABILITY_AI_API_KEY) {
 	throw new Error("STABILITY_AI_API_KEY is a required environment variable");
 }

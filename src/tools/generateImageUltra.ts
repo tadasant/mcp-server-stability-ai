@@ -3,6 +3,7 @@ import { ResourceContext } from "../resources/resourceClient.js";
 import { getResourceClient } from "../resources/resourceClientFactory.js";
 import { StabilityAiApiClient } from "../stabilityAi/stabilityAiApiClient.js";
 import open from "open";
+import { saveMetadata } from "../utils/metadataUtils.js";
 
 // Constants for shared values
 const ASPECT_RATIOS = [
@@ -117,43 +118,71 @@ export const generateImageUltra = async (
     outputImageFileName
   } = GenerateImageUltraArgsSchema.parse(args);
 
-  const client = new StabilityAiApiClient(process.env.STABILITY_AI_API_KEY);
-  
-  // TODO: Implement the actual API call to the Ultra endpoint
-  // For now, we'll use a placeholder implementation similar to Core
-  const response = await client.generateImageUltra(prompt, {
+  // Capture request parameters for metadata
+  const requestParams = {
+    prompt,
     aspectRatio,
     negativePrompt,
     stylePreset,
     seed,
-    outputFormat
-  });
-
-  const imageAsBase64 = response.base64Image;
-  const filename = `${outputImageFileName}.${outputFormat}`;
-
-  const resourceClient = getResourceClient();
-  const resource = await resourceClient.createResource(
-    filename,
-    imageAsBase64,
-    context
-  );
-
-  if (resource.uri.includes("file://")) {
-    const file_location = resource.uri.replace("file://", "");
-    open(file_location);
-  }
-
-  return {
-    content: [
-      {
-        type: "text",
-        text: `Processed \`${prompt}\` with Stable Image Ultra to create the following image:`,
-      },
-      {
-        type: "resource",
-        resource: resource,
-      },
-    ],
+    outputFormat,
+    model: "ultra",
+    outputImageFileName
   };
+
+  try {
+    const client = new StabilityAiApiClient(process.env.STABILITY_AI_API_KEY);
+    
+    // Make the API call to the Ultra endpoint
+    const response = await client.generateImageUltra(prompt, {
+      aspectRatio,
+      negativePrompt,
+      stylePreset,
+      seed,
+      outputFormat
+    });
+
+    const imageAsBase64 = response.base64Image;
+    const filename = `${outputImageFileName}.${outputFormat}`;
+
+    const resourceClient = getResourceClient();
+    const resource = await resourceClient.createResource(
+      filename,
+      imageAsBase64,
+      context
+    );
+
+    if (resource.uri.includes("file://")) {
+      const file_location = resource.uri.replace("file://", "");
+      
+      // Save metadata to a text file
+      saveMetadata(file_location, requestParams, {
+        responseType: "success",
+        timeGenerated: new Date().toISOString()
+      });
+      
+      open(file_location);
+    }
+
+    return {
+      content: [
+        {
+          type: "text",
+          text: `Processed \`${prompt}\` with Stable Image Ultra to create the following image:`,
+        },
+        {
+          type: "resource",
+          resource: resource,
+        },
+      ],
+    };
+  } catch (error) {
+    // Handle errors and save error metadata if enabled
+    if (process.env.SAVE_METADATA_FAILED === 'true') {
+      // Create a temp path for the failed request metadata
+      const errorFilePath = `${process.env.IMAGE_STORAGE_DIRECTORY}/${outputImageFileName}-failed-${Date.now()}.txt`;
+      saveMetadata(errorFilePath, requestParams, undefined, error as Error | string);
+    }
+    throw error;
+  }
 };

@@ -3,6 +3,7 @@ import open from "open";
 import { z } from "zod";
 import { ResourceContext } from "../resources/resourceClient.js";
 import { getResourceClient } from "../resources/resourceClientFactory.js";
+import { saveMetadata } from "../utils/metadataUtils.js";
 
 // Constants for shared values
 const ASPECT_RATIOS = [
@@ -113,40 +114,67 @@ export const generateImageCore = async (
 		outputImageFileName,
 	} = GenerateImageCoreArgsSchema.parse(args);
 
-	const client = new StabilityAiApiClient(process.env.STABILITY_AI_API_KEY);
-	const response = await client.generateImageCore(prompt, {
+	// Capture request parameters for metadata
+	const requestParams = {
+		prompt,
 		aspectRatio,
 		negativePrompt,
 		stylePreset,
-	});
-
-	const imageAsBase64 = response.base64Image;
-	const filename = `${outputImageFileName}.png`;
-
-	const resourceClient = getResourceClient();
-	const resource = await resourceClient.createResource(
-		filename,
-		imageAsBase64,
-		context
-	);
-
-	if (resource.uri.includes("file://")) {
-		const file_location = resource.uri.replace("file://", "");
-		open(file_location);
-	}
-
-	return {
-		content: [
-			{
-				type: "text",
-				text: `Processed \`${prompt}\` with Stability Core to create the following image:`,
-			},
-			{
-				type: "resource",
-				resource: resource,
-			},
-		],
+		model: "core",
+		outputImageFileName,
 	};
+
+	try {
+		const client = new StabilityAiApiClient(process.env.STABILITY_AI_API_KEY);
+		const response = await client.generateImageCore(prompt, {
+			aspectRatio,
+			negativePrompt,
+			stylePreset,
+		});
+
+		const imageAsBase64 = response.base64Image;
+		const filename = `${outputImageFileName}.png`;
+
+		const resourceClient = getResourceClient();
+		const resource = await resourceClient.createResource(
+			filename,
+			imageAsBase64,
+			context
+		);
+
+		if (resource.uri.includes("file://")) {
+			const file_location = resource.uri.replace("file://", "");
+			
+			// Save metadata to a text file
+			saveMetadata(file_location, requestParams, { 
+				responseType: "success", 
+				timeGenerated: new Date().toISOString() 
+			});
+			
+			open(file_location);
+		}
+
+		return {
+			content: [
+				{
+					type: "text",
+					text: `Processed \`${prompt}\` with Stability Core to create the following image:`,
+				},
+				{
+					type: "resource",
+					resource: resource,
+				},
+			],
+		};
+	} catch (error) {
+		// Handle errors and save error metadata if enabled
+		if (process.env.SAVE_METADATA_FAILED === 'true') {
+			// Create a temp path for the failed request metadata
+			const errorFilePath = `${process.env.IMAGE_STORAGE_DIRECTORY}/${outputImageFileName}-failed-${Date.now()}.txt`;
+			saveMetadata(errorFilePath, requestParams, undefined, error as Error | string);
+		}
+		throw error;
+	}
 };
 
 // The original function is now defined solely in generateImage.ts for backward compatibility

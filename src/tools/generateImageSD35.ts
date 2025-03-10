@@ -3,6 +3,7 @@ import { ResourceContext } from "../resources/resourceClient.js";
 import { getResourceClient } from "../resources/resourceClientFactory.js";
 import { SD35Client } from "../stabilityAi/sd35Client.js";
 import open from "open";
+import { saveMetadata } from "../utils/metadataUtils.js";
 
 // Constants for shared values
 const ASPECT_RATIOS = [
@@ -140,47 +141,77 @@ export const generateImageSD35 = async (
     outputImageFileName
   } = GenerateImageSD35ArgsSchema.parse(args);
 
-  const client = new SD35Client(process.env.STABILITY_AI_API_KEY);
-  
-  // Convert to SD35Client format
-  const imageBuffer = await client.generateImage({
+  // Capture request parameters for metadata
+  const requestParams = {
     prompt,
-    aspect_ratio: aspectRatio,
-    negative_prompt: negativePrompt,
-    style_preset: stylePreset,
-    cfg_scale: cfgScale,
+    aspectRatio,
+    negativePrompt,
+    stylePreset,
+    cfgScale,
     seed,
     model,
-    output_format: outputFormat,
-    mode: "text-to-image"
-  });
-
-  // Convert buffer to base64
-  const imageAsBase64 = imageBuffer.toString('base64');
-  const filename = `${outputImageFileName}.${outputFormat}`;
-
-  const resourceClient = getResourceClient();
-  const resource = await resourceClient.createResource(
-    filename,
-    imageAsBase64,
-    context
-  );
-
-  if (resource.uri.includes("file://")) {
-    const file_location = resource.uri.replace("file://", "");
-    open(file_location);
-  }
-
-  return {
-    content: [
-      {
-        type: "text",
-        text: `Processed \`${prompt}\` with ${model} to create the following image:`,
-      },
-      {
-        type: "resource",
-        resource: resource,
-      },
-    ],
+    outputFormat,
+    outputImageFileName
   };
+
+  try {
+    const client = new SD35Client(process.env.STABILITY_AI_API_KEY);
+    
+    // Convert to SD35Client format
+    const imageBuffer = await client.generateImage({
+      prompt,
+      aspect_ratio: aspectRatio,
+      negative_prompt: negativePrompt,
+      style_preset: stylePreset,
+      cfg_scale: cfgScale,
+      seed,
+      model,
+      output_format: outputFormat,
+      mode: "text-to-image"
+    });
+
+    // Convert buffer to base64
+    const imageAsBase64 = imageBuffer.toString('base64');
+    const filename = `${outputImageFileName}.${outputFormat}`;
+
+    const resourceClient = getResourceClient();
+    const resource = await resourceClient.createResource(
+      filename,
+      imageAsBase64,
+      context
+    );
+
+    if (resource.uri.includes("file://")) {
+      const file_location = resource.uri.replace("file://", "");
+      
+      // Save metadata to a text file
+      saveMetadata(file_location, requestParams, {
+        responseType: "success",
+        timeGenerated: new Date().toISOString()
+      });
+      
+      open(file_location);
+    }
+
+    return {
+      content: [
+        {
+          type: "text",
+          text: `Processed \`${prompt}\` with ${model} to create the following image:`,
+        },
+        {
+          type: "resource",
+          resource: resource,
+        },
+      ],
+    };
+  } catch (error) {
+    // Handle errors and save error metadata if enabled
+    if (process.env.SAVE_METADATA_FAILED === 'true') {
+      // Create a temp path for the failed request metadata
+      const errorFilePath = `${process.env.IMAGE_STORAGE_DIRECTORY}/${outputImageFileName}-failed-${Date.now()}.txt`;
+      saveMetadata(errorFilePath, requestParams, undefined, error as Error | string);
+    }
+    throw error;
+  }
 };
