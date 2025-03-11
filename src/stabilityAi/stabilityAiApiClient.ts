@@ -144,6 +144,9 @@ export class StabilityAiApiClient {
 		const payload = {
 			prompt,
 			output_format: "png",
+			aspect_ratio: options?.aspectRatio,
+			negative_prompt: options?.negativePrompt,
+			style_preset: options?.stylePreset,
 			...options,
 		};
 
