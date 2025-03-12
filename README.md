@@ -9,6 +9,10 @@
 
 Haven't heard about MCP yet? The easiest way to keep up-to-date is to read our [weekly newsletter at PulseMCP](https://www.pulsemcp.com/).
 
+<a href="https://glama.ai/mcp/servers/arwjcxkkhg">
+  <img width="380" height="200" src="https://glama.ai/mcp/servers/arwjcxkkhg/badge" alt="Stability AI Server MCP server" />
+</a>
+
 ---
 
 This is an MCP ([Model Context Protocol](https://modelcontextprotocol.io/)) Server integrating MCP Clients with [Stability AI](https://stability.ai/)'s latest & greatest Stable Diffusion image manipulation functionalities: generate, edit, upscale, and more.
