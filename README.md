@@ -5,6 +5,11 @@
  <a href="https://smithery.ai/server/mcp-server-stability-ai"><img alt="Smithery Badge" src="https://smithery.ai/badge/mcp-server-stability-ai"></a>
 </div>
 
+<div align="center">
+  <p></p>
+  <a href="https://www.pulsemcp.com/servers/tadasant-stability-ai"><img src="https://storage.googleapis.com/pulse_public/testing/tadasant-stability-ai.svg" width="400" alt="PulseMCP Badge"></a>
+</div>
+
 <br/>
 
 Haven't heard about MCP yet? The easiest way to keep up-to-date is to read our [weekly newsletter at PulseMCP](https://www.pulsemcp.com/).
