@@ -35,6 +35,40 @@ interface GenerateImageCoreOptions {
 	outputFormat?: "png" | "jpeg" | "webp";
 }
 
+interface GenerateImageUltraOptions {
+	aspectRatio?:
+		| "16:9"
+		| "1:1"
+		| "21:9"
+		| "2:3"
+		| "3:2"
+		| "4:5"
+		| "5:4"
+		| "9:16"
+		| "9:21";
+	negativePrompt?: string;
+	seed?: number;
+	stylePreset?:
+		| "3d-model"
+		| "analog-film"
+		| "anime"
+		| "cinematic"
+		| "comic-book"
+		| "digital-art"
+		| "enhance"
+		| "fantasy-art"
+		| "isometric"
+		| "line-art"
+		| "low-poly"
+		| "modeling-compound"
+		| "neon-punk"
+		| "origami"
+		| "photographic"
+		| "pixel-art"
+		| "tile-texture";
+	outputFormat?: "png" | "jpeg" | "webp";
+}
+
 interface OutpaintOptions {
 	left?: number;
 	right?: number;
@@ -153,6 +187,29 @@ export class StabilityAiApiClient {
 		return this.axiosClient
 			.postForm(
 				`${this.baseUrl}/v2beta/stable-image/generate/core`,
+				axios.toFormData(payload, new FormData())
+			)
+			.then((res) => {
+				const base64Image = res.data.image;
+				return {
+					base64Image,
+				};
+			});
+	}
+
+	async generateImageUltra(
+		prompt: string,
+		options?: GenerateImageUltraOptions
+	): Promise<{ base64Image: string }> {
+		const payload = {
+			prompt,
+			output_format: options?.outputFormat || "png",
+			...options,
+		};
+
+		return this.axiosClient
+			.postForm(
+				`${this.baseUrl}/v2beta/stable-image/generate/ultra`,
 				axios.toFormData(payload, new FormData())
 			)
 			.then((res) => {

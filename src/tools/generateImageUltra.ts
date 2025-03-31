@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { ResourceContext } from "../resources/resourceClient.js";
 import { getResourceClient } from "../resources/resourceClientFactory.js";
-import { SD35Client } from "../stabilityAi/sd35Client.js";
+import { StabilityAiApiClient } from "../stabilityAi/stabilityAiApiClient.js";
 import open from "open";
 import { saveMetadata } from "../utils/metadataUtils.js";
 
@@ -38,40 +38,31 @@ const STYLE_PRESETS = [
   "tile-texture"
 ] as const;
 
-const MODELS = [
-  "sd3.5-large",
-  "sd3.5-large-turbo",
-  "sd3.5-medium",
-  "sd3-large",
-  "sd3-large-turbo",
-  "sd3-medium"
-] as const;
+const OUTPUT_FORMATS = ["jpeg", "png", "webp"] as const;
 
 // Zod schema
-const GenerateImageSD35ArgsSchema = z.object({
+const GenerateImageUltraArgsSchema = z.object({
   prompt: z.string().min(1, "Prompt cannot be empty").max(10000),
   aspectRatio: z.enum(ASPECT_RATIOS).optional().default("1:1"),
   negativePrompt: z.string().max(10000).optional(),
   stylePreset: z.enum(STYLE_PRESETS).optional(),
-  cfgScale: z.number().min(1).max(10).optional(),
   seed: z.number().min(0).max(4294967294).optional(),
-  model: z.enum(MODELS).optional().default("sd3.5-large"),
-  outputFormat: z.enum(["jpeg", "png"]).optional().default("png"),
+  outputFormat: z.enum(OUTPUT_FORMATS).optional().default("png"),
   outputImageFileName: z.string()
 });
 
-export type GenerateImageSD35Args = z.infer<typeof GenerateImageSD35ArgsSchema>;
+export type GenerateImageUltraArgs = z.infer<typeof GenerateImageUltraArgsSchema>;
 
 // Tool definition
-export const generateImageSD35ToolDefinition = {
-  name: "stability-ai-generate-image-sd35",
-  description: "Generate an image using Stable Diffusion 3.5 models with advanced configuration options.",
+export const generateImageUltraToolDefinition = {
+  name: "stability-ai-generate-image-ultra",
+  description: "Generate an image using Stability AI's most advanced Ultra service, offering high quality images with unprecedented prompt understanding, excellent typography, complex compositions, and dynamic lighting. Note that Ultra is significantly expensive than Core models, and should not be a default option when prompted to generate an image unless specifically instructed to use Ultra for a session in advance."
   inputSchema: {
     type: "object",
     properties: {
       prompt: {
         type: "string",
-        description: "What you wish to see in the output image. A strong, descriptive prompt that clearly defines elements, colors, and subjects will lead to better results.",
+        description: "What you wish to see in the output image. A strong, descriptive prompt that clearly defines elements, colors, and subjects will lead to better results. To control the weight of a given word use the format (word:weight), where word is the word you'd like to control the weight of and weight is a value between 0 and 1",
         minLength: 1,
         maxLength: 10000
       },
@@ -91,27 +82,15 @@ export const generateImageSD35ToolDefinition = {
         enum: STYLE_PRESETS,
         description: "Guides the image model towards a particular style."
       },
-      cfgScale: {
-        type: "number",
-        minimum: 1,
-        maximum: 10,
-        description: "How strictly the diffusion process adheres to the prompt text. Values range from 1-10, with higher values keeping your image closer to your prompt."
-      },
       seed: {
         type: "number",
         minimum: 0,
         maximum: 4294967294,
         description: "A specific value that guides the 'randomness' of the generation. (Omit or use 0 for random seed)"
       },
-      model: {
-        type: "string",
-        enum: MODELS,
-        description: "The model to use for generation: SD3.5 Large (8B params, high quality), Medium (2.5B params, balanced), or Turbo (faster) variants. SD3.5 costs range from 3.5-6.5 credits per generation.",
-        default: "sd3.5-large"
-      },
       outputFormat: {
         type: "string",
-        enum: ["jpeg", "png"],
+        enum: OUTPUT_FORMATS,
         description: "The format of the output image.",
         default: "png"
       },
@@ -125,8 +104,8 @@ export const generateImageSD35ToolDefinition = {
 } as const;
 
 // Implementation
-export const generateImageSD35 = async (
-  args: GenerateImageSD35Args,
+export const generateImageUltra = async (
+  args: GenerateImageUltraArgs,
   context: ResourceContext
 ) => {
   const {
@@ -134,12 +113,10 @@ export const generateImageSD35 = async (
     aspectRatio,
     negativePrompt,
     stylePreset,
-    cfgScale,
     seed,
-    model,
     outputFormat,
     outputImageFileName
-  } = GenerateImageSD35ArgsSchema.parse(args);
+  } = GenerateImageUltraArgsSchema.parse(args);
 
   // Capture request parameters for metadata
   const requestParams = {
@@ -147,31 +124,25 @@ export const generateImageSD35 = async (
     aspectRatio,
     negativePrompt,
     stylePreset,
-    cfgScale,
     seed,
-    model,
     outputFormat,
+    model: "ultra",
     outputImageFileName
   };
 
   try {
-    const client = new SD35Client(process.env.STABILITY_AI_API_KEY);
+    const client = new StabilityAiApiClient(process.env.STABILITY_AI_API_KEY);
     
-    // Convert to SD35Client format
-    const imageBuffer = await client.generateImage({
-      prompt,
-      aspect_ratio: aspectRatio,
-      negative_prompt: negativePrompt,
-      style_preset: stylePreset,
-      cfg_scale: cfgScale,
+    // Make the API call to the Ultra endpoint
+    const response = await client.generateImageUltra(prompt, {
+      aspectRatio,
+      negativePrompt,
+      stylePreset,
       seed,
-      model,
-      output_format: outputFormat,
-      mode: "text-to-image"
+      outputFormat
     });
 
-    // Convert buffer to base64
-    const imageAsBase64 = imageBuffer.toString('base64');
+    const imageAsBase64 = response.base64Image;
     const filename = `${outputImageFileName}.${outputFormat}`;
 
     const resourceClient = getResourceClient();
@@ -197,7 +168,7 @@ export const generateImageSD35 = async (
       content: [
         {
           type: "text",
-          text: `Processed \`${prompt}\` with ${model} to create the following image:`,
+          text: `Processed \`${prompt}\` with Stable Image Ultra to create the following image:`,
         },
         {
           type: "resource",
