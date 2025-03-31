@@ -65,7 +65,7 @@ export type GenerateImageCoreArgs = generateImageCoreArgs;
 // Tool definition using the same constants
 export const generateImageCoreToolDefinition = {
 	name: "stability-ai-generate-image-core",
-	description: "Generate an image using Stability AI's Core API service based on a provided prompt.",
+	description: "Generate an image using Stability AI's Core API service based on a provided prompt. This model and endpoint is a sensible default to use when not prompted to use a specific one, opffering a good balance of cost and quality",
 	inputSchema: {
 		type: "object",
 		properties: {
