@@ -56,13 +56,13 @@ export type GenerateImageUltraArgs = z.infer<typeof GenerateImageUltraArgsSchema
 // Tool definition
 export const generateImageUltraToolDefinition = {
   name: "stability-ai-generate-image-ultra",
-  description: "Generate an image using Stability AI's most advanced Ultra service, offering high quality images with unprecedented prompt understanding, excellent typography, complex compositions, and dynamic lighting.",
+  description: "Generate an image using Stability AI's most advanced Ultra service, offering high quality images with unprecedented prompt understanding, excellent typography, complex compositions, and dynamic lighting. Note that Ultra is significantly expensive than Core models, and should not be a default option when prompted to generate an image unless specifically instructed to use Ultra for a session in advance."
   inputSchema: {
     type: "object",
     properties: {
       prompt: {
         type: "string",
-        description: "What you wish to see in the output image. A strong, descriptive prompt that clearly defines elements, colors, and subjects will lead to better results.",
+        description: "What you wish to see in the output image. A strong, descriptive prompt that clearly defines elements, colors, and subjects will lead to better results. To control the weight of a given word use the format (word:weight), where word is the word you'd like to control the weight of and weight is a value between 0 and 1",
         minLength: 1,
         maxLength: 10000
       },
@@ -74,7 +74,7 @@ export const generateImageUltraToolDefinition = {
       },
       negativePrompt: {
         type: "string",
-        description: "Keywords of what you do not wish to see in the output image. This helps avoid unwanted elements. Maximum 10000 characters.",
+        description: "Keywords of what you do not wish to see in the output image. This helps avoid unwanted elements. Maximum 10000 characters. If your user does not give specific guidance for a negative prompt, fill in some sensible defaults based on how descriptive the user is about their intended image",
         maxLength: 10000
       },
       stylePreset: {

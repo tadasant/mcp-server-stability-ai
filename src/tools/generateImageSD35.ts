@@ -83,7 +83,7 @@ export const generateImageSD35ToolDefinition = {
       },
       negativePrompt: {
         type: "string",
-        description: "Keywords of what you do not wish to see in the output image. This helps avoid unwanted elements. Maximum 10000 characters.",
+        description: "Keywords of what you do not wish to see in the output image. This helps avoid unwanted elements. Maximum 10000 characters. If your user does not give specific guidance for a negative prompt, fill in some sensible defaults based on how descriptive the user is about their intended image",
         maxLength: 10000
       },
       stylePreset: {

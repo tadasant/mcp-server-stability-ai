@@ -43,7 +43,7 @@ const DESCRIPTIONS = {
 		"What you wish to see in the output image. A strong, descriptive prompt that clearly defines elements, colors, and subjects will lead to better results.\n\nTo control the weight of a given word use the format (word:weight), where word is the word you'd like to control the weight of and weight is a value between 0 and 1. For example: The sky was a crisp (blue:0.3) and (green:0.8) would convey a sky that was blue and green, but more green than blue.",
 	aspectRatio: "Controls the aspect ratio of the generated image.",
 	negativePrompt:
-		"A blurb of text describing what you do not wish to see in the output image. This is an advanced feature.",
+		"A blurb of text describing what you do not wish to see in the output image. This is an advanced feature. If your user does not give specific guidance for a negative prompt, fill in some sensible defaults based on how descriptive the user is about their intended image",
 	stylePreset: "Guides the image model towards a particular style.",
 	outputImageFileName:
 		"The desired name of the output image file, no file extension. Make it descriptive but short. Lowercase, dash-separated, no special characters.",

@@ -1,6 +1,3 @@
-// Export from generateImage.js (the legacy API)
-export { generateImage, GenerateImageArgs, generateImageToolDefinition } from "./generateImage.js";
-
 // Export from generateImageCore.js 
 export { generateImageCore, generateImageCoreArgs, GenerateImageCoreArgs, generateImageCoreToolDefinition } from "./generateImageCore.js";
 
