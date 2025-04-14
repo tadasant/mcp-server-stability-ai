@@ -7,6 +7,12 @@
 
 <br/>
 
+<div align="center">
+  <a href="https://www.pulsemcp.com/servers/tadasant-stability-ai"><img src="https://www.pulsemcp.com/badge/top-pick/tadasant-stability-ai" width="400" alt="PulseMCP Badge"></a>
+</div>
+
+<br/>
+
 Haven't heard about MCP yet? The easiest way to keep up-to-date is to read our [weekly newsletter at PulseMCP](https://www.pulsemcp.com/).
 
 ---
