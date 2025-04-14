@@ -5,8 +5,9 @@
  <a href="https://smithery.ai/server/mcp-server-stability-ai"><img alt="Smithery Badge" src="https://smithery.ai/badge/mcp-server-stability-ai"></a>
 </div>
 
+<br/>
+
 <div align="center">
-  <p></p>
   <a href="https://www.pulsemcp.com/servers/tadasant-stability-ai"><img src="https://www.pulsemcp.com/badge/top-pick/tadasant-stability-ai" width="400" alt="PulseMCP Badge"></a>
 </div>
 
