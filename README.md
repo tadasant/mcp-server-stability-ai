@@ -6,7 +6,6 @@
 </div>
 
 <div align="center">
-  <p></p>
   <a href="https://www.pulsemcp.com/servers/tadasant-stability-ai"><img src="https://www.pulsemcp.com/badge/top-pick/tadasant-stability-ai" width="400" alt="PulseMCP Badge"></a>
 </div>
 
