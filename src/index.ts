@@ -15,6 +15,13 @@ import {
 	generateImage,
 	GenerateImageArgs,
 	generateImageToolDefinition,
+	generateImageCore,
+	generateImageCoreArgs,
+	GenerateImageCoreArgs,
+	generateImageCoreToolDefinition,
+	generateImageUltra,
+	GenerateImageUltraArgs,
+	generateImageUltraToolDefinition,
 	generateImageSD35,
 	GenerateImageSD35Args,
 	generateImageSD35ToolDefinition,
@@ -73,6 +80,15 @@ if (!process.env.IMAGE_STORAGE_DIRECTORY) {
 		process.env.IMAGE_STORAGE_DIRECTORY =
 			"/tmp/tadasant-mcp-server-stability-ai";
 	}
+}
+
+// Set default values for metadata saving
+if (process.env.SAVE_METADATA === undefined) {
+	process.env.SAVE_METADATA = "true";
+}
+
+if (process.env.SAVE_METADATA_FAILED === undefined) {
+	process.env.SAVE_METADATA_FAILED = "true";
 }
 
 if (!process.env.STABILITY_AI_API_KEY) {
@@ -169,6 +185,10 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 		switch (name) {
 			case generateImageToolDefinition.name:
 				return generateImage(args as GenerateImageArgs, context);
+			case generateImageCoreToolDefinition.name:
+				return generateImageCore(args as generateImageCoreArgs, context);
+			case generateImageUltraToolDefinition.name:
+				return generateImageUltra(args as GenerateImageUltraArgs, context);
 			case generateImageSD35ToolDefinition.name:
 				return generateImageSD35(args as GenerateImageSD35Args, context);
 			case removeBackgroundToolDefinition.name:
@@ -216,6 +236,8 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 	return {
 		tools: [
 			generateImageToolDefinition,
+			generateImageCoreToolDefinition,
+			generateImageUltraToolDefinition,
 			generateImageSD35ToolDefinition,
 			removeBackgroundToolDefinition,
 			outpaintToolDefinition,

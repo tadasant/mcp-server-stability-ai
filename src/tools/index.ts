@@ -1,4 +1,8 @@
-export * from "./generateImage.js";
+// Export from generateImageCore.js 
+export { generateImageCore, generateImageCoreArgs, GenerateImageCoreArgs, generateImageCoreToolDefinition } from "./generateImageCore.js";
+
+// Export from generateImageUltra.js
+export { generateImageUltra, GenerateImageUltraArgs, generateImageUltraToolDefinition } from "./generateImageUltra.js";
 export * from "./generateImageSD35.js";
 export * from "./removeBackground.js";
 export * from "./outpaint.js";
