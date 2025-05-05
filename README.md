@@ -1,3 +1,5 @@
+[![MseeP.ai Security Assessment Badge](https://mseep.net/pr/tadasant-mcp-server-stability-ai-badge.png)](https://mseep.ai/app/tadasant-mcp-server-stability-ai)
+
 <div align="center">
  <h1><img src="https://github.com/tadasant/mcp-server-stability-ai/blob/main/images/mcp-server-stability-ai-logo.png" width="160px"><br/>Stability AI MCP Server</h1>
  <img src="https://img.shields.io/github/license/tadasant/mcp-server-stability-ai?style=flat-square&color=purple"/>
