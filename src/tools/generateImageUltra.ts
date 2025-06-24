@@ -56,7 +56,7 @@ export type GenerateImageUltraArgs = z.infer<typeof GenerateImageUltraArgsSchema
 // Tool definition
 export const generateImageUltraToolDefinition = {
   name: "stability-ai-generate-image-ultra",
-  description: "Generate an image using Stability AI's most advanced Ultra service, offering high quality images with unprecedented prompt understanding, excellent typography, complex compositions, and dynamic lighting. Note that Ultra is significantly expensive than Core models, and should not be a default option when prompted to generate an image unless specifically instructed to use Ultra for a session in advance."
+  description: "Generate an image using Stability AI's most advanced Ultra service, offering high quality images with unprecedented prompt understanding, excellent typography, complex compositions, and dynamic lighting. Note that Ultra is significantly expensive than Core models, and should not be a default option when prompted to generate an image unless specifically instructed to use Ultra for a session in advance.",
   inputSchema: {
     type: "object",
     properties: {
